@@ -1,0 +1,18 @@
+{"loss":
+{"loss_type": "mse",
+  "distance_metric": "mmd",
+  "mmd_weight": 1.0
+},
+  "encoding": {
+    "layers": []
+  },
+  "decoding": {
+    "layers": []
+  },
+  "latent": {
+    "num_nodes": 2
+  },
+  "optimiser": {
+    "params": {}, "name": "adam"
+  }
+}

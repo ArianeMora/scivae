@@ -1,0 +1,23 @@
+ {"loss":
+  {"loss_type": "ce",
+    "distance_metric": "kl"
+  },
+    "encoding": {
+      "layers": [
+                  {"num_nodes": 64, "activation_fn": "selu"}
+          ]
+    },
+    "decoding": {
+      "layers": [
+                  {"num_nodes": 32, "activation_fn": "relu"},
+                  {"num_nodes": 64, "activation_fn": "selu"}
+          ]
+    },
+    "latent": {
+      "num_nodes": 5
+    },
+    "optimiser": {
+      "params": {"learning_rate": 0.001, "beta_1": 0.8, "beta_2": 0.97},
+      "name": "adamax"
+    }
+ }
