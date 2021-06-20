@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>R example &mdash; scivae 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/logo.png"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/custom.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="IRIS dataset" href="python_example.html" />
+    <link rel="prev" title="Installing sci-vae" href="../installing/index.html" />
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">sci-VAE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installing/index.html">Installing sci-vae</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Running sci-vae</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">R example</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setup-a-python-environment">Setup a python environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#using-venv">Using VENV</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-conda">Using Conda</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python_example.html">IRIS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histone_example.html">Histone modification data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Config examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scivae</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>R example</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/arianemora/scivae/blob/main/docs_src/src/examples/r_example.md" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="r-example">
+<h1>R example<a class="headerlink" href="#r-example" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="setup-a-python-environment">
+<h2>Setup a python environment<a class="headerlink" href="#setup-a-python-environment" title="Permalink to this headline">¶</a></h2>
+<p>If you already have one just skip this!</p>
+<div class="section" id="using-venv">
+<h3>Using VENV<a class="headerlink" href="#using-venv" title="Permalink to this headline">¶</a></h3>
+<p>If you don’t have Anaconda installed (or know what that is) go with the below option:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">virtualenv_create</span><span class="p">(</span>
+      <span class="n">envname</span> <span class="o">=</span> <span class="s">&quot;ml&quot;</span><span class="p">,</span>
+      <span class="n">python</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span>
+      <span class="n">packages</span> <span class="o">=</span> <span class="s">&quot;scivae&quot;</span><span class="p">,</span>
+      <span class="n">system_site_packages</span> <span class="o">=</span> <span class="nf">getOption</span><span class="p">(</span><span class="s">&quot;reticulate.virtualenv.system_site_packages&quot;</span><span class="p">,</span>
+                                       <span class="n">default</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+<p>You only need to do the above once. This creates a new environment for you and then you can install as below:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">use_virtualenv</span><span class="p">(</span><span class="s">&quot;ml&quot;</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="using-conda">
+<h3>Using Conda<a class="headerlink" href="#using-conda" title="Permalink to this headline">¶</a></h3>
+<p>Create a new conda environment called <strong>ml</strong> and install scivae into it.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">use_condaenv</span><span class="p">(</span><span class="n">condaEnvName</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="n">tidyverse</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">dplyr</span><span class="p">)</span>
+<span class="nf">library</span><span class="p">(</span><span class="n">reticulate</span><span class="p">)</span>
+
+<span class="c1"># If things fail here it&#39;s because you need to the steps above</span>
+<span class="nf">use_condaenv</span><span class="p">(</span><span class="s">&quot;ml&quot;</span><span class="p">,</span> <span class="n">required</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span> <span class="c1"># OR use_virtualenv(&quot;ml&quot;, required = TRUE)  # depending on how you installed it!</span>
+<span class="n">scivae</span> <span class="o">&lt;&lt;-</span> <span class="nf">import</span><span class="p">(</span><span class="s">&quot;scivae&quot;</span><span class="p">)</span>    <span class="c1"># Make global</span>
+
+<span class="n">df</span> <span class="o">&lt;-</span> <span class="nf">read_csv</span><span class="p">(</span><span class="s">&quot;iris.csv&quot;</span><span class="p">)</span>
+<span class="n">labels</span> <span class="o">&lt;-</span> <span class="n">df</span><span class="o">$</span><span class="n">label</span> <span class="c1"># Keep for later</span>
+
+<span class="c1"># Now we want the dataset not to have the gene ID column (i.e. just to be the numeric values)</span>
+<span class="n">df_mat</span> <span class="o">&lt;-</span> <span class="n">df</span> <span class="o">%&gt;%</span> <span class="nf">select</span><span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="n">label</span><span class="p">))</span>
+
+<span class="n">df_mat</span> <span class="o">&lt;-</span> <span class="nf">as.matrix</span><span class="p">(</span><span class="n">df_mat</span><span class="p">)</span>
+<span class="n">vae</span> <span class="o">&lt;-</span> <span class="n">scivae</span><span class="o">$</span><span class="nf">VAE</span><span class="p">(</span><span class="n">df_mat</span><span class="p">,</span> <span class="n">df_mat</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="s">&quot;config.json&quot;</span><span class="p">,</span> <span class="s">&#39;vae_rcm&#39;</span><span class="p">,</span> <span class="n">config_as_str</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+<span class="n">vae</span><span class="o">$</span><span class="nf">encode</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">)</span>
+<span class="n">vae</span><span class="o">$</span><span class="nf">save</span><span class="p">()</span>
+
+<span class="c1"># Load saved data</span>
+<span class="n">vae</span><span class="o">$</span><span class="nf">load</span><span class="p">()</span>
+<span class="c1"># Now let&#39;s run the VAE on the data</span>
+<span class="n">data</span> <span class="o">&lt;-</span> <span class="n">vae</span><span class="o">$</span><span class="nf">encode_new_data</span><span class="p">(</span><span class="n">df_mat</span><span class="p">,</span> <span class="n">encoding_type</span><span class="o">=</span><span class="s">&quot;z&quot;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+
+<span class="c1"># Add in the columns to the old DF</span>
+<span class="n">df</span><span class="o">$</span><span class="n">VAE0</span> <span class="o">&lt;-</span> <span class="n">data</span><span class="p">[,</span> <span class="m">1</span><span class="p">]</span>
+<span class="n">df</span><span class="o">$</span><span class="n">VAE1</span> <span class="o">&lt;-</span> <span class="n">data</span><span class="p">[,</span> <span class="m">2</span><span class="p">]</span>
+<span class="n">df</span><span class="o">$</span><span class="n">VAE2</span> <span class="o">&lt;-</span> <span class="n">data</span><span class="p">[,</span> <span class="m">3</span><span class="p">]</span>
+
+<span class="n">vis</span> <span class="o">&lt;-</span> <span class="n">scivae</span><span class="o">$</span><span class="nf">Vis</span><span class="p">(</span><span class="n">vae</span><span class="p">,</span> <span class="n">vae</span><span class="o">$</span><span class="n">u</span><span class="p">,</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="n">cols</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;sepal_length&quot;</span><span class="p">,</span> <span class="s">&quot;sepal_width&quot;</span><span class="p">)</span>
+
+<span class="n">vis</span><span class="o">$</span><span class="nf">plot_feature_scatters</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">show_plt</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span> <span class="n">fig_type</span><span class="o">=</span><span class="s">&quot;png&quot;</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="bp">T</span><span class="p">,</span> <span class="n">vae_data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                                      <span class="n">title</span><span class="o">=</span><span class="s">&quot;cX DepthshadeTrue latent space&quot;</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">$</span><span class="nf">plot_node_hists</span><span class="p">(</span><span class="n">show_plt</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">$</span><span class="nf">plot_node_hists</span><span class="p">(</span><span class="n">show_plt</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="bp">T</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&quot;z_mean&quot;</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">$</span><span class="nf">plot_node_hists</span><span class="p">(</span><span class="n">show_plt</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="bp">T</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&quot;z_log_var&quot;</span><span class="p">)</span>
+
+<span class="n">vis</span><span class="o">$</span><span class="nf">plot_node_feature_correlation</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s">&#39;label&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">show_plt</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="bp">T</span><span class="p">,</span> <span class="n">vae_data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">$</span><span class="nf">plot_node_correlation</span><span class="p">(</span><span class="n">show_plt</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">$</span><span class="nf">plot_input_distribution</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">show_plt</span><span class="o">=</span><span class="bp">F</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="bp">T</span><span class="p">)</span>
+
+<span class="n">vis</span><span class="o">$</span><span class="nf">plot_top_values_by_rank</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;VAE0&quot;</span><span class="p">,</span> <span class="s">&quot;VAE1&quot;</span><span class="p">,</span> <span class="s">&quot;VAE2&quot;</span><span class="p">),</span> <span class="n">cols</span><span class="p">,</span> <span class="s">&quot;label&quot;</span><span class="p">,</span> <span class="n">num_values</span><span class="o">=</span><span class="nf">as.integer</span><span class="p">(</span><span class="m">10</span><span class="p">),</span> <span class="n">cluster_rows</span><span class="o">=</span><span class="bp">F</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="python_example.html" class="btn btn-neutral float-right" title="IRIS dataset" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../installing/index.html" class="btn btn-neutral float-left" title="Installing sci-vae" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Ariane Mora
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

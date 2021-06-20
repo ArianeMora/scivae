@@ -1,0 +1,1848 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Histone modification data &mdash; scivae 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/logo.png"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/custom.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Config examples" href="configs.html" />
+    <link rel="prev" title="IRIS dataset" href="python_example.html" />
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">sci-VAE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installing/index.html">Installing sci-vae</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Running sci-vae</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="r_example.html">R example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_example.html">IRIS dataset</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Histone modification data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#Example-using-Histone-modification-data-downloaded-from-Encode">Example using Histone modification data downloaded from Encode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Normalise-the-data">Normalise the data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Train-the-VAE">Train the VAE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Quality-control!">Quality control!</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Quality-control-2:-Visualise-the-correlation-between-features.">Quality control 2: Visualise the correlation between features.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Having-fun-with-inspecting-the-latent-space">Having fun with inspecting the latent space</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#Plot-specific-genes">Plot specific genes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configs.html">Config examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scivae</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Histone modification data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/arianemora/scivae/blob/main/docs_src/src/examples/histone_example.ipynb" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput.container,
+div.nbinput.container div.prompt,
+div.nbinput.container div.input_area,
+div.nbinput.container div[class*=highlight],
+div.nbinput.container div[class*=highlight] pre,
+div.nboutput.container,
+div.nboutput.container div.prompt,
+div.nboutput.container div.output_area,
+div.nboutput.container div[class*=highlight],
+div.nboutput.container div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput.container div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput.container,
+div.nboutput.container {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput.container,
+    div.nboutput.container {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput.container {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast.container {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput.container div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput.container div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput.container div.prompt,
+div.nboutput.container div.prompt {
+    width: 4.5ex;
+    padding-top: 5px;
+    position: relative;
+    user-select: none;
+}
+
+div.nbinput.container div.prompt > div,
+div.nboutput.container div.prompt > div {
+    position: absolute;
+    right: 0;
+    margin-right: 0.3ex;
+}
+
+@media (max-width: 540px) {
+    div.nbinput.container div.prompt,
+    div.nboutput.container div.prompt {
+        width: unset;
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput.container div.prompt.empty {
+        padding: 0;
+    }
+
+    div.nbinput.container div.prompt > div,
+    div.nboutput.container div.prompt > div {
+        position: unset;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput.container div.prompt pre,
+div.nboutput.container div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput.container div.input_area,
+div.nboutput.container div.output_area {
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput.container div.input_area,
+    div.nboutput.container div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput.container div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput.container div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput.container div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput.container div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+
+div.nbinput.container div.input_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight] > pre,
+div.nboutput.container div.output_area div[class*=highlight].math,
+div.nboutput.container div.output_area.rendered_html,
+div.nboutput.container div.output_area > div.output_javascript,
+div.nboutput.container div.output_area:not(.rendered_html) > img{
+    padding: 5px;
+}
+
+/* fix copybtn overflow problem in chromium (needed for 'sphinx_copybutton') */
+div.nbinput.container div.input_area > div[class^='highlight'],
+div.nboutput.container div.output_area > div[class^='highlight']{
+    overflow-y: hidden;
+}
+
+/* hide copybtn icon on prompts (needed for 'sphinx_copybutton') */
+.prompt a.copybtn {
+    display: none;
+}
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="Histone-modification-data">
+<h1>Histone modification data<a class="headerlink" href="#Histone-modification-data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="Example-using-Histone-modification-data-downloaded-from-Encode">
+<h2>Example using Histone modification data downloaded from Encode<a class="headerlink" href="#Example-using-Histone-modification-data-downloaded-from-Encode" title="Permalink to this headline">¶</a></h2>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scivae</span> <span class="kn">import</span> <span class="n">VAE</span>
+
+<span class="c1"># Set the location of the mnist data</span>
+<span class="n">data_dir</span> <span class="o">=</span><span class="s1">&#39;~/Documents/code/scivae_public/tests/data/&#39;</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s1">mouse_HM_var500_data.csv&#39;</span><span class="p">)</span>
+<span class="n">df</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>entrezgene_id</th>
+      <th>external_gene_name</th>
+      <th>ensembl_gene_id</th>
+      <th>embryonic-facial-prominence_10.5-days_embryonic_H3K27ac_ChIP-seq_ENCFF003VMR_width</th>
+      <th>embryonic-facial-prominence_10.5-days_embryonic_H3K27ac_ChIP-seq_ENCFF003VMR_signal</th>
+      <th>embryonic-facial-prominence_10.5-days_embryonic_H3K27me3_ChIP-seq_ENCFF310NGB_width</th>
+      <th>embryonic-facial-prominence_10.5-days_embryonic_H3K27me3_ChIP-seq_ENCFF310NGB_signal</th>
+      <th>embryonic-facial-prominence_10.5-days_embryonic_H3K36me3_ChIP-seq_ENCFF565QAD_width</th>
+      <th>embryonic-facial-prominence_10.5-days_embryonic_H3K36me3_ChIP-seq_ENCFF565QAD_signal</th>
+      <th>embryonic-facial-prominence_10.5-days_embryonic_H3K4me1_ChIP-seq_ENCFF053GHW_width</th>
+      <th>...</th>
+      <th>stomach_16.5-days_embryonic_H3K4me1_ChIP-seq_ENCFF814BNR_width</th>
+      <th>stomach_16.5-days_embryonic_H3K4me1_ChIP-seq_ENCFF814BNR_signal</th>
+      <th>stomach_16.5-days_embryonic_H3K4me2_ChIP-seq_ENCFF501CJA_width</th>
+      <th>stomach_16.5-days_embryonic_H3K4me2_ChIP-seq_ENCFF501CJA_signal</th>
+      <th>stomach_16.5-days_embryonic_H3K4me3_ChIP-seq_ENCFF569KWB_width</th>
+      <th>stomach_16.5-days_embryonic_H3K4me3_ChIP-seq_ENCFF569KWB_signal</th>
+      <th>stomach_16.5-days_embryonic_H3K9ac_ChIP-seq_ENCFF068FWP_width</th>
+      <th>stomach_16.5-days_embryonic_H3K9ac_ChIP-seq_ENCFF068FWP_signal</th>
+      <th>stomach_16.5-days_embryonic_H3K9me3_ChIP-seq_ENCFF544RGQ_width</th>
+      <th>stomach_16.5-days_embryonic_H3K9me3_ChIP-seq_ENCFF544RGQ_signal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>497097</td>
+      <td>Xkr4</td>
+      <td>ENSMUSG00000051951</td>
+      <td>838.0</td>
+      <td>4.64805</td>
+      <td>2236.0</td>
+      <td>4.70623</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>841.0</td>
+      <td>...</td>
+      <td>459.0</td>
+      <td>4.17547</td>
+      <td>2522.0</td>
+      <td>32.56543</td>
+      <td>2456.0</td>
+      <td>37.44113</td>
+      <td>1852.0</td>
+      <td>6.81303</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>384198</td>
+      <td>Fam47e</td>
+      <td>ENSMUSG00000057068</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>12492</td>
+      <td>Scarb2</td>
+      <td>ENSMUSG00000029426</td>
+      <td>2053.0</td>
+      <td>16.06083</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4699.0</td>
+      <td>4.03960</td>
+      <td>787.0</td>
+      <td>...</td>
+      <td>797.0</td>
+      <td>4.94311</td>
+      <td>862.0</td>
+      <td>20.08811</td>
+      <td>3071.0</td>
+      <td>61.25575</td>
+      <td>2503.0</td>
+      <td>24.87381</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>269113</td>
+      <td>Nup54</td>
+      <td>ENSMUSG00000034826</td>
+      <td>1546.0</td>
+      <td>23.33510</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>8433.0</td>
+      <td>4.30511</td>
+      <td>462.0</td>
+      <td>...</td>
+      <td>215.0</td>
+      <td>2.45555</td>
+      <td>1376.0</td>
+      <td>35.42474</td>
+      <td>2128.0</td>
+      <td>66.67310</td>
+      <td>1165.0</td>
+      <td>28.39603</td>
+      <td>425.0</td>
+      <td>3.4231</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>15945</td>
+      <td>Cxcl10</td>
+      <td>ENSMUSG00000034855</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>984.0</td>
+      <td>4.95978</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1086.0</td>
+      <td>...</td>
+      <td>641.0</td>
+      <td>3.41532</td>
+      <td>794.0</td>
+      <td>13.95355</td>
+      <td>661.0</td>
+      <td>8.53067</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>20395</th>
+      <td>21762</td>
+      <td>Psmd2</td>
+      <td>ENSMUSG00000006998</td>
+      <td>1431.0</td>
+      <td>10.42818</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4157.0</td>
+      <td>3.39655</td>
+      <td>1512.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1407.0</td>
+      <td>13.44737</td>
+      <td>1765.0</td>
+      <td>61.31395</td>
+      <td>1525.0</td>
+      <td>20.17010</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>20396</th>
+      <td>73047</td>
+      <td>Camk2n2</td>
+      <td>ENSMUSG00000051146</td>
+      <td>2117.0</td>
+      <td>10.87675</td>
+      <td>3875.0</td>
+      <td>5.10808</td>
+      <td>734.0</td>
+      <td>3.56510</td>
+      <td>3664.0</td>
+      <td>...</td>
+      <td>656.0</td>
+      <td>4.96696</td>
+      <td>3348.0</td>
+      <td>26.86646</td>
+      <td>3417.0</td>
+      <td>25.29333</td>
+      <td>1863.0</td>
+      <td>7.71053</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>20397</th>
+      <td>107522</td>
+      <td>Ece2</td>
+      <td>ENSMUSG00000022842</td>
+      <td>1041.0</td>
+      <td>7.72166</td>
+      <td>3514.0</td>
+      <td>5.33374</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1335.0</td>
+      <td>...</td>
+      <td>301.0</td>
+      <td>2.85033</td>
+      <td>1312.0</td>
+      <td>30.50417</td>
+      <td>1046.0</td>
+      <td>31.87724</td>
+      <td>926.0</td>
+      <td>10.12819</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>20398</th>
+      <td>208624</td>
+      <td>Alg3</td>
+      <td>ENSMUSG00000033809</td>
+      <td>2342.0</td>
+      <td>17.18692</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>754.0</td>
+      <td>5.22586</td>
+      <td>1288.0</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3259.0</td>
+      <td>44.11346</td>
+      <td>2597.0</td>
+      <td>66.85134</td>
+      <td>834.0</td>
+      <td>9.84724</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>20399</th>
+      <td>328643</td>
+      <td>Vwa5b2</td>
+      <td>ENSMUSG00000046613</td>
+      <td>666.0</td>
+      <td>1.94738</td>
+      <td>7033.0</td>
+      <td>14.60257</td>
+      <td>4385.0</td>
+      <td>7.32809</td>
+      <td>2502.0</td>
+      <td>...</td>
+      <td>724.0</td>
+      <td>3.69700</td>
+      <td>1864.0</td>
+      <td>32.48818</td>
+      <td>1716.0</td>
+      <td>28.13862</td>
+      <td>1324.0</td>
+      <td>7.19501</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>20400 rows × 997 columns</p>
+</div></div>
+</div>
+</div>
+<div class="section" id="Normalise-the-data">
+<h2>Normalise the data<a class="headerlink" href="#Normalise-the-data" title="Permalink to this headline">¶</a></h2>
+<p>Before running the VAE we might only want to do it on a subset, here I’m interested in marks at day E10.5 only in the brain.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># Get out columns with HM values</span>
+<span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;10&#39;</span> <span class="ow">in</span> <span class="n">c</span> <span class="ow">and</span> <span class="s1">&#39;brain&#39;</span> <span class="ow">in</span> <span class="n">c</span> <span class="ow">and</span> <span class="s1">&#39;signal&#39;</span> <span class="ow">in</span> <span class="n">c</span><span class="p">]</span>  <span class="c1"># i.e. only do brain at E10 samples</span>
+<span class="c1"># Make sure we log2 the values since they&#39;re too diffuse</span>
+<span class="n">vae_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+<span class="n">vae_df</span><span class="p">[</span><span class="s1">&#39;external_gene_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;external_gene_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">new_cols</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+    <span class="n">new_name</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;embryonic&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">new_cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_name</span><span class="p">)</span>
+    <span class="n">vae_df</span><span class="p">[</span><span class="n">new_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">vae_df</span><span class="p">[</span><span class="n">new_cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="c1"># Create and train VAE</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="Train-the-VAE">
+<h2>Train the VAE<a class="headerlink" href="#Train-the-VAE" title="Permalink to this headline">¶</a></h2>
+<p>We run the training of the VAE</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;loss&quot;</span><span class="p">:</span>
+  <span class="p">{</span><span class="s2">&quot;loss_type&quot;</span><span class="p">:</span> <span class="s2">&quot;mse&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;distance_metric&quot;</span><span class="p">:</span> <span class="s2">&quot;mmd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mmd_weight&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;encoding&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span><span class="s2">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;relu&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s2">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;selu&quot;</span><span class="p">}</span>
+        <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;decoding&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s2">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;selu&quot;</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="s2">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;relu&quot;</span><span class="p">}</span>
+        <span class="p">]</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;latent&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">3</span>
+  <span class="p">},</span>
+  <span class="s2">&quot;optimiser&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="s2">&quot;beta_1&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="s2">&quot;beta_2&quot;</span><span class="p">:</span> <span class="mf">0.97</span><span class="p">},</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;adamax&quot;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">vae</span> <span class="o">=</span> <span class="n">VAE</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;None&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">),</span> <span class="n">config</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;vae_rcm&#39;</span><span class="p">)</span>
+<span class="n">vae</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+None
+Model: &#34;encoder&#34;
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to
+==================================================================================================
+default_input (InputLayer)      [(None, 22)]         0
+__________________________________________________________________________________________________
+dense (Dense)                   (None, 64)           1472        default_input[0][0]
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, 32)           2080        dense[0][0]
+__________________________________________________________________________________________________
+z_mean (Dense)                  (None, 3)            99          dense_1[0][0]
+__________________________________________________________________________________________________
+z_log_sigma (Dense)             (None, 3)            99          dense_1[0][0]
+__________________________________________________________________________________________________
+z (Lambda)                      (None, 3)            0           z_mean[0][0]
+                                                                 z_log_sigma[0][0]
+==================================================================================================
+Total params: 3,750
+Trainable params: 3,750
+Non-trainable params: 0
+__________________________________________________________________________________________________
+Model: &#34;decoder&#34;
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #
+=================================================================
+z_sampling (InputLayer)      [(None, 3)]               0
+_________________________________________________________________
+dense_2 (Dense)              (None, 32)                128
+_________________________________________________________________
+dense_3 (Dense)              (None, 64)                2112
+_________________________________________________________________
+dense_4 (Dense)              (None, 22)                1430
+=================================================================
+Total params: 3,670
+Trainable params: 3,670
+Non-trainable params: 0
+_________________________________________________________________
+Model: &#34;vae_rcm_scivae&#34;
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to
+==================================================================================================
+default_input (InputLayer)      [(None, 22)]         0
+__________________________________________________________________________________________________
+encoder (Functional)            [(None, 3), (None, 3 3750        default_input[0][0]
+__________________________________________________________________________________________________
+decoder (Functional)            (None, 22)           3670        encoder[0][2]
+__________________________________________________________________________________________________
+dense (Dense)                   (None, 64)           1472        default_input[0][0]
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, 32)           2080        dense[0][0]
+__________________________________________________________________________________________________
+z_mean (Dense)                  (None, 3)            99          dense_1[0][0]
+__________________________________________________________________________________________________
+z_log_sigma (Dense)             (None, 3)            99          dense_1[0][0]
+__________________________________________________________________________________________________
+z (Lambda)                      (None, 3)            0           z_mean[0][0]
+                                                                 z_log_sigma[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape (TensorFlowOp [(2,)]               0           z[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice (Tens [()]                 0           tf_op_layer_Shape[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Pack (TensorFlowOpL [(2,)]               0           tf_op_layer_strided_slice[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_RandomStandardNorma [(None, 3)]          0           tf_op_layer_Pack[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mul (TensorFlowOpLa [(None, 3)]          0           tf_op_layer_RandomStandardNormal[
+__________________________________________________________________________________________________
+tf_op_layer_Add (TensorFlowOpLa [(None, 3)]          0           tf_op_layer_Mul[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_1 (TensorFlow [(2,)]               0           tf_op_layer_Add[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_3 (TensorFlow [(2,)]               0           tf_op_layer_Add[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_2 (TensorFlow [(2,)]               0           tf_op_layer_Add[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_4 (TensorFlow [(2,)]               0           z[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_6 (TensorFlow [(2,)]               0           z[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_5 (TensorFlow [(2,)]               0           z[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_7 (TensorFlow [(2,)]               0           tf_op_layer_Add[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_9 (TensorFlow [(2,)]               0           tf_op_layer_Add[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Shape_8 (TensorFlow [(2,)]               0           z[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_1 (Te [()]                 0           tf_op_layer_Shape_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_3 (Te [()]                 0           tf_op_layer_Shape_3[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_2 (Te [()]                 0           tf_op_layer_Shape_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_4 (Te [()]                 0           tf_op_layer_Shape_4[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_6 (Te [()]                 0           tf_op_layer_Shape_6[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_5 (Te [()]                 0           tf_op_layer_Shape_5[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_7 (Te [()]                 0           tf_op_layer_Shape_7[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_9 (Te [()]                 0           tf_op_layer_Shape_9[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_strided_slice_8 (Te [()]                 0           tf_op_layer_Shape_8[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape/shape (Tens [(3,)]               0           tf_op_layer_strided_slice_1[0][0]
+                                                                 tf_op_layer_strided_slice_3[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_1/shape (Te [(3,)]               0           tf_op_layer_strided_slice_2[0][0]
+                                                                 tf_op_layer_strided_slice_3[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_2/shape (Te [(3,)]               0           tf_op_layer_strided_slice_4[0][0]
+                                                                 tf_op_layer_strided_slice_6[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_3/shape (Te [(3,)]               0           tf_op_layer_strided_slice_5[0][0]
+                                                                 tf_op_layer_strided_slice_6[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_4/shape (Te [(3,)]               0           tf_op_layer_strided_slice_7[0][0]
+                                                                 tf_op_layer_strided_slice_9[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_5/shape (Te [(3,)]               0           tf_op_layer_strided_slice_8[0][0]
+                                                                 tf_op_layer_strided_slice_9[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape (TensorFlow [(None, 1, None)]    0           tf_op_layer_Add[0][0]
+                                                                 tf_op_layer_Reshape/shape[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Tile/multiples (Ten [(3,)]               0           tf_op_layer_strided_slice_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_1 (TensorFl [(1, None, None)]    0           tf_op_layer_Add[0][0]
+                                                                 tf_op_layer_Reshape_1/shape[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Tile_1/multiples (T [(3,)]               0           tf_op_layer_strided_slice_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_2 (TensorFl [(None, 1, None)]    0           z[0][0]
+                                                                 tf_op_layer_Reshape_2/shape[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Tile_2/multiples (T [(3,)]               0           tf_op_layer_strided_slice_5[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_3 (TensorFl [(1, None, None)]    0           z[0][0]
+                                                                 tf_op_layer_Reshape_3/shape[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Tile_3/multiples (T [(3,)]               0           tf_op_layer_strided_slice_4[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_4 (TensorFl [(None, 1, None)]    0           tf_op_layer_Add[0][0]
+                                                                 tf_op_layer_Reshape_4/shape[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Tile_4/multiples (T [(3,)]               0           tf_op_layer_strided_slice_8[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Reshape_5 (TensorFl [(1, None, None)]    0           z[0][0]
+                                                                 tf_op_layer_Reshape_5/shape[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Tile_5/multiples (T [(3,)]               0           tf_op_layer_strided_slice_7[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Tile (TensorFlowOpL [(None, None, None)] 0           tf_op_layer_Reshape[0][0]
+                                                                 tf_op_layer_Tile/multiples[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Tile_1 (TensorFlowO [(None, None, None)] 0           tf_op_layer_Reshape_1[0][0]
+                                                                 tf_op_layer_Tile_1/multiples[0][0
+__________________________________________________________________________________________________
+tf_op_layer_Tile_2 (TensorFlowO [(None, None, None)] 0           tf_op_layer_Reshape_2[0][0]
+                                                                 tf_op_layer_Tile_2/multiples[0][0
+__________________________________________________________________________________________________
+tf_op_layer_Tile_3 (TensorFlowO [(None, None, None)] 0           tf_op_layer_Reshape_3[0][0]
+                                                                 tf_op_layer_Tile_3/multiples[0][0
+__________________________________________________________________________________________________
+tf_op_layer_Tile_4 (TensorFlowO [(None, None, None)] 0           tf_op_layer_Reshape_4[0][0]
+                                                                 tf_op_layer_Tile_4/multiples[0][0
+__________________________________________________________________________________________________
+tf_op_layer_Tile_5 (TensorFlowO [(None, None, None)] 0           tf_op_layer_Reshape_5[0][0]
+                                                                 tf_op_layer_Tile_5/multiples[0][0
+__________________________________________________________________________________________________
+tf_op_layer_Sub (TensorFlowOpLa [(None, None, None)] 0           tf_op_layer_Tile[0][0]
+                                                                 tf_op_layer_Tile_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Sub_1 (TensorFlowOp [(None, None, None)] 0           tf_op_layer_Tile_2[0][0]
+                                                                 tf_op_layer_Tile_3[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Sub_2 (TensorFlowOp [(None, None, None)] 0           tf_op_layer_Tile_4[0][0]
+                                                                 tf_op_layer_Tile_5[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Square (TensorFlowO [(None, None, None)] 0           tf_op_layer_Sub[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Square_1 (TensorFlo [(None, None, None)] 0           tf_op_layer_Sub_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Square_2 (TensorFlo [(None, None, None)] 0           tf_op_layer_Sub_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mean (TensorFlowOpL [(None, None)]       0           tf_op_layer_Square[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mean_1 (TensorFlowO [(None, None)]       0           tf_op_layer_Square_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mean_2 (TensorFlowO [(None, None)]       0           tf_op_layer_Square_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Neg (TensorFlowOpLa [(None, None)]       0           tf_op_layer_Mean[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Cast (TensorFlowOpL [()]                 0           tf_op_layer_strided_slice_3[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Neg_1 (TensorFlowOp [(None, None)]       0           tf_op_layer_Mean_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Cast_1 (TensorFlowO [()]                 0           tf_op_layer_strided_slice_6[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Neg_2 (TensorFlowOp [(None, None)]       0           tf_op_layer_Mean_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Cast_2 (TensorFlowO [()]                 0           tf_op_layer_strided_slice_9[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_RealDiv (TensorFlow [(None, None)]       0           tf_op_layer_Neg[0][0]
+                                                                 tf_op_layer_Cast[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_RealDiv_1 (TensorFl [(None, None)]       0           tf_op_layer_Neg_1[0][0]
+                                                                 tf_op_layer_Cast_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_RealDiv_2 (TensorFl [(None, None)]       0           tf_op_layer_Neg_2[0][0]
+                                                                 tf_op_layer_Cast_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Exp (TensorFlowOpLa [(None, None)]       0           tf_op_layer_RealDiv[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Exp_1 (TensorFlowOp [(None, None)]       0           tf_op_layer_RealDiv_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Exp_2 (TensorFlowOp [(None, None)]       0           tf_op_layer_RealDiv_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mean_3 (TensorFlowO [()]                 0           tf_op_layer_Exp[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mean_4 (TensorFlowO [()]                 0           tf_op_layer_Exp_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mean_5 (TensorFlowO [()]                 0           tf_op_layer_Exp_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Sub_4 (TensorFlowOp [(None, 22)]         0           default_input[0][0]
+                                                                 decoder[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_AddV2 (TensorFlowOp [()]                 0           tf_op_layer_Mean_3[0][0]
+                                                                 tf_op_layer_Mean_4[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mul_1 (TensorFlowOp [()]                 0           tf_op_layer_Mean_5[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Square_3 (TensorFlo [(None, 22)]         0           tf_op_layer_Sub_4[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Sub_3 (TensorFlowOp [()]                 0           tf_op_layer_AddV2[0][0]
+                                                                 tf_op_layer_Mul_1[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Sum (TensorFlowOpLa [(None,)]            0           tf_op_layer_Square_3[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mul_2 (TensorFlowOp [()]                 0           tf_op_layer_Sub_3[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_AddV2_1 (TensorFlow [(None,)]            0           tf_op_layer_Sum[0][0]
+                                                                 tf_op_layer_Mul_2[0][0]
+__________________________________________________________________________________________________
+tf_op_layer_Mean_6 (TensorFlowO [()]                 0           tf_op_layer_AddV2_1[0][0]
+__________________________________________________________________________________________________
+add_loss (AddLoss)              ()                   0           tf_op_layer_Mean_6[0][0]
+==================================================================================================
+Total params: 7,420
+Trainable params: 7,420
+Non-trainable params: 0
+__________________________________________________________________________________________________
+None
+Epoch 1/10
+  1/347 [..............................] - ETA: 0s - loss: 3.4721WARNING:tensorflow:From /Users/ariane/opt/miniconda3/envs/ml/lib/python3.8/site-packages/tensorflow/python/ops/summary_ops_v2.py:1277: stop (from tensorflow.python.eager.profiler) is deprecated and will be removed after 2020-07-01.
+Instructions for updating:
+use `tf.profiler.experimental.stop` instead.
+WARNING:tensorflow:Callbacks method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0018s vs `on_train_batch_end` time: 0.0139s). Check your callbacks.
+347/347 [==============================] - 1s 1ms/step - loss: 1.1860 - val_loss: 0.4848
+Epoch 2/10
+347/347 [==============================] - 0s 858us/step - loss: 0.4239 - val_loss: 0.3916
+Epoch 3/10
+347/347 [==============================] - 0s 856us/step - loss: 0.3679 - val_loss: 0.3570
+Epoch 4/10
+347/347 [==============================] - 0s 854us/step - loss: 0.3421 - val_loss: 0.3354
+Epoch 5/10
+347/347 [==============================] - 0s 859us/step - loss: 0.3260 - val_loss: 0.3230
+Epoch 6/10
+347/347 [==============================] - 0s 855us/step - loss: 0.3101 - val_loss: 0.3098
+Epoch 7/10
+347/347 [==============================] - 0s 870us/step - loss: 0.3001 - val_loss: 0.3030
+Epoch 8/10
+347/347 [==============================] - 0s 865us/step - loss: 0.2926 - val_loss: 0.2974
+Epoch 9/10
+347/347 [==============================] - 0s 901us/step - loss: 0.2875 - val_loss: 0.2908
+Epoch 10/10
+347/347 [==============================] - 0s 932us/step - loss: 0.2822 - val_loss: 0.2883
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Quality-control!">
+<h2>Quality control!<a class="headerlink" href="#Quality-control!" title="Permalink to this headline">¶</a></h2>
+<p>Check that the nodes follow <strong>approximately</strong> a normal distribution.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">scivae</span> <span class="kn">import</span> <span class="n">Vis</span>
+
+<span class="n">vis</span> <span class="o">=</span> <span class="n">Vis</span><span class="p">(</span><span class="n">vae</span><span class="p">,</span> <span class="n">vae</span><span class="o">.</span><span class="n">u</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">vis</span><span class="o">.</span><span class="n">plot_node_hists</span><span class="p">(</span><span class="n">show_plt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 216x216 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_7_1.png" src="../_images/examples_histone_example_7_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 216x216 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_7_3.png" src="../_images/examples_histone_example_7_3.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 216x216 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_7_5.png" src="../_images/examples_histone_example_7_5.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 216x216 with 0 Axes&gt;
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="Quality-control-2:-Visualise-the-correlation-between-features.">
+<h2>Quality control 2: Visualise the correlation between features.<a class="headerlink" href="#Quality-control-2:-Visualise-the-correlation-between-features." title="Permalink to this headline">¶</a></h2>
+<p>Since the VAE isn’t magic, just good at learning correlations/patterns between input features, it’s sensible to check that the correlations between features and nodes exists.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">vis</span><span class="o">.</span><span class="n">plot_node_feature_correlation</span><span class="p">(</span><span class="n">vae_df</span><span class="p">,</span> <span class="s1">&#39;external_gene_name&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">new_cols</span><span class="p">,</span> <span class="n">show_plt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+1 forebrain 10.5-days  H3K27ac 0.4458199156559925 0.0
+1 forebrain 10.5-days  H3K27me3 -0.36822856875234455 0.0
+1 forebrain 10.5-days  H3K36me3 0.7182105590240476 0.0
+1 forebrain 10.5-days  H3K4me1 0.08458726186139696 1.0252935071364138e-33
+1 forebrain 10.5-days  H3K4me3 0.44107422217939335 0.0
+1 forebrain 10.5-days  H3K9me3 0.3322304714711835 0.0
+1 forebrain 13.5-days  H3K36me3 0.7569123576516704 0.0
+1 forebrain 16.5-days  H3K9ac 0.39801675553415206 0.0
+1 hindbrain 10.5-days  H3K27ac 0.44252869028028696 0.0
+1 hindbrain 10.5-days  H3K27me3 -0.3771528991191724 0.0
+1 hindbrain 10.5-days  H3K36me3 0.7321705949738145 0.0
+1 hindbrain 10.5-days  H3K4me1 0.06973185019912057 2.036931562717694e-23
+1 hindbrain 10.5-days  H3K4me3 0.45126012014510813 0.0
+1 hindbrain 10.5-days  H3K9me3 0.3264817001379393 0.0
+1 hindbrain 16.5-days  H3K36me3 0.7714628829696493 0.0
+1 midbrain 10.5-days  H3K27ac 0.4503315853763465 0.0
+1 midbrain 10.5-days  H3K27me3 -0.3666337452858759 0.0
+1 midbrain 10.5-days  H3K36me3 0.7305575293886859 0.0
+1 midbrain 10.5-days  H3K4me1 0.0840195102765061 2.7591686911311554e-33
+1 midbrain 10.5-days  H3K4me3 0.44755223785962295 0.0
+1 midbrain 10.5-days  H3K9me3 0.33900035619636754 0.0
+1 midbrain 16.5-days  H3K36me3 0.7601814747175523 0.0
+2 forebrain 10.5-days  H3K27ac 0.6993835507290372 0.0
+2 forebrain 10.5-days  H3K27me3 0.20659462514255594 1.6867100459448565e-195
+2 forebrain 10.5-days  H3K36me3 0.4361433127132986 0.0
+2 forebrain 10.5-days  H3K4me1 0.5565358671909726 0.0
+2 forebrain 10.5-days  H3K4me3 0.7238777304800306 0.0
+2 forebrain 10.5-days  H3K9me3 -0.19534750429567438 1.3140794381319174e-174
+2 forebrain 13.5-days  H3K36me3 0.3859214672795727 0.0
+2 forebrain 16.5-days  H3K9ac 0.6951814583436485 0.0
+2 hindbrain 10.5-days  H3K27ac 0.7005059927719833 0.0
+2 hindbrain 10.5-days  H3K27me3 0.18556958021502687 1.8188890397226624e-157
+2 hindbrain 10.5-days  H3K36me3 0.4300915377001582 0.0
+2 hindbrain 10.5-days  H3K4me1 0.5656442933199602 0.0
+2 hindbrain 10.5-days  H3K4me3 0.7504783215717985 0.0
+2 hindbrain 10.5-days  H3K9me3 -0.19492769494427906 7.481605744627867e-174
+2 hindbrain 16.5-days  H3K36me3 0.2815763124778623 0.0
+2 midbrain 10.5-days  H3K27ac 0.6979357744327495 0.0
+2 midbrain 10.5-days  H3K27me3 0.20427806575300653 4.301548566325711e-191
+2 midbrain 10.5-days  H3K36me3 0.4248950750456577 0.0
+2 midbrain 10.5-days  H3K4me1 0.5879522185404434 0.0
+2 midbrain 10.5-days  H3K4me3 0.7517804636786536 0.0
+2 midbrain 10.5-days  H3K9me3 -0.19917129159908467 1.4378527990397066e-181
+2 midbrain 16.5-days  H3K36me3 0.28502688680921845 0.0
+3 forebrain 10.5-days  H3K27ac 0.2890663800190854 0.0
+3 forebrain 10.5-days  H3K27me3 0.5593864732716971 0.0
+3 forebrain 10.5-days  H3K36me3 0.23123764557098217 9.403954879613397e-246
+3 forebrain 10.5-days  H3K4me1 0.6216729280325257 0.0
+3 forebrain 10.5-days  H3K4me3 0.23789807422300102 2.0641959594635796e-260
+3 forebrain 10.5-days  H3K9me3 0.02547228690467184 0.0002741905345491083
+3 forebrain 13.5-days  H3K36me3 0.2637598624109295 0.0
+3 forebrain 16.5-days  H3K9ac 0.3161420021696647 0.0
+3 hindbrain 10.5-days  H3K27ac 0.3047330189007952 0.0
+3 hindbrain 10.5-days  H3K27me3 0.5625858889736766 0.0
+3 hindbrain 10.5-days  H3K36me3 0.24594051955316365 9.835681231685088e-279
+3 hindbrain 10.5-days  H3K4me1 0.6282999983783705 0.0
+3 hindbrain 10.5-days  H3K4me3 0.22727626909374676 2.967658174597913e-237
+3 hindbrain 10.5-days  H3K9me3 0.028915715334947162 3.618164152092494e-05
+3 hindbrain 16.5-days  H3K36me3 0.2913522951162253 0.0
+3 midbrain 10.5-days  H3K27ac 0.2910320635114295 0.0
+3 midbrain 10.5-days  H3K27me3 0.5638753340469604 0.0
+3 midbrain 10.5-days  H3K36me3 0.23914964254076615 3.223652555211334e-263
+3 midbrain 10.5-days  H3K4me1 0.6065451621570106 0.0
+3 midbrain 10.5-days  H3K4me3 0.22789701574539437 1.4169728260263464e-238
+3 midbrain 10.5-days  H3K9me3 0.021854889024951515 0.0017981980661522779
+3 midbrain 16.5-days  H3K36me3 0.2853159387224747 0.0
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 216x216 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_9_2.png" src="../_images/examples_histone_example_9_2.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area rendered_html docutils container">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Node 1</th>
+      <th>Node 1 padj</th>
+      <th>Node 2</th>
+      <th>Node 2 padj</th>
+      <th>Node 3</th>
+      <th>Node 3 padj</th>
+      <th>labels</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.445820</td>
+      <td>0.0</td>
+      <td>0.699384</td>
+      <td>0.0</td>
+      <td>0.289066</td>
+      <td>0.000</td>
+      <td>forebrain 10.5-days  H3K27ac</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>-0.368229</td>
+      <td>0.0</td>
+      <td>0.206595</td>
+      <td>0.0</td>
+      <td>0.559386</td>
+      <td>0.000</td>
+      <td>forebrain 10.5-days  H3K27me3</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.718211</td>
+      <td>0.0</td>
+      <td>0.436143</td>
+      <td>0.0</td>
+      <td>0.231238</td>
+      <td>0.000</td>
+      <td>forebrain 10.5-days  H3K36me3</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.084587</td>
+      <td>0.0</td>
+      <td>0.556536</td>
+      <td>0.0</td>
+      <td>0.621673</td>
+      <td>0.000</td>
+      <td>forebrain 10.5-days  H3K4me1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.441074</td>
+      <td>0.0</td>
+      <td>0.723878</td>
+      <td>0.0</td>
+      <td>0.237898</td>
+      <td>0.000</td>
+      <td>forebrain 10.5-days  H3K4me3</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.332230</td>
+      <td>0.0</td>
+      <td>-0.195348</td>
+      <td>0.0</td>
+      <td>0.025472</td>
+      <td>0.000</td>
+      <td>forebrain 10.5-days  H3K9me3</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.756912</td>
+      <td>0.0</td>
+      <td>0.385921</td>
+      <td>0.0</td>
+      <td>0.263760</td>
+      <td>0.000</td>
+      <td>forebrain 13.5-days  H3K36me3</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.398017</td>
+      <td>0.0</td>
+      <td>0.695181</td>
+      <td>0.0</td>
+      <td>0.316142</td>
+      <td>0.000</td>
+      <td>forebrain 16.5-days  H3K9ac</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.442529</td>
+      <td>0.0</td>
+      <td>0.700506</td>
+      <td>0.0</td>
+      <td>0.304733</td>
+      <td>0.000</td>
+      <td>hindbrain 10.5-days  H3K27ac</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>-0.377153</td>
+      <td>0.0</td>
+      <td>0.185570</td>
+      <td>0.0</td>
+      <td>0.562586</td>
+      <td>0.000</td>
+      <td>hindbrain 10.5-days  H3K27me3</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.732171</td>
+      <td>0.0</td>
+      <td>0.430092</td>
+      <td>0.0</td>
+      <td>0.245941</td>
+      <td>0.000</td>
+      <td>hindbrain 10.5-days  H3K36me3</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0.069732</td>
+      <td>0.0</td>
+      <td>0.565644</td>
+      <td>0.0</td>
+      <td>0.628300</td>
+      <td>0.000</td>
+      <td>hindbrain 10.5-days  H3K4me1</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0.451260</td>
+      <td>0.0</td>
+      <td>0.750478</td>
+      <td>0.0</td>
+      <td>0.227276</td>
+      <td>0.000</td>
+      <td>hindbrain 10.5-days  H3K4me3</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0.326482</td>
+      <td>0.0</td>
+      <td>-0.194928</td>
+      <td>0.0</td>
+      <td>0.028916</td>
+      <td>0.000</td>
+      <td>hindbrain 10.5-days  H3K9me3</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0.771463</td>
+      <td>0.0</td>
+      <td>0.281576</td>
+      <td>0.0</td>
+      <td>0.291352</td>
+      <td>0.000</td>
+      <td>hindbrain 16.5-days  H3K36me3</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>0.450332</td>
+      <td>0.0</td>
+      <td>0.697936</td>
+      <td>0.0</td>
+      <td>0.291032</td>
+      <td>0.000</td>
+      <td>midbrain 10.5-days  H3K27ac</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>-0.366634</td>
+      <td>0.0</td>
+      <td>0.204278</td>
+      <td>0.0</td>
+      <td>0.563875</td>
+      <td>0.000</td>
+      <td>midbrain 10.5-days  H3K27me3</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>0.730558</td>
+      <td>0.0</td>
+      <td>0.424895</td>
+      <td>0.0</td>
+      <td>0.239150</td>
+      <td>0.000</td>
+      <td>midbrain 10.5-days  H3K36me3</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0.084020</td>
+      <td>0.0</td>
+      <td>0.587952</td>
+      <td>0.0</td>
+      <td>0.606545</td>
+      <td>0.000</td>
+      <td>midbrain 10.5-days  H3K4me1</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>0.447552</td>
+      <td>0.0</td>
+      <td>0.751780</td>
+      <td>0.0</td>
+      <td>0.227897</td>
+      <td>0.000</td>
+      <td>midbrain 10.5-days  H3K4me3</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>0.339000</td>
+      <td>0.0</td>
+      <td>-0.199171</td>
+      <td>0.0</td>
+      <td>0.021855</td>
+      <td>0.002</td>
+      <td>midbrain 10.5-days  H3K9me3</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>0.760181</td>
+      <td>0.0</td>
+      <td>0.285027</td>
+      <td>0.0</td>
+      <td>0.285316</td>
+      <td>0.000</td>
+      <td>midbrain 16.5-days  H3K36me3</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+</div>
+</div>
+<div class="section" id="Having-fun-with-inspecting-the-latent-space">
+<h2>Having fun with inspecting the latent space<a class="headerlink" href="#Having-fun-with-inspecting-the-latent-space" title="Permalink to this headline">¶</a></h2>
+<p>Now we are confident it’s learnt stuff, let’s look at how all our genes look on the latent space!</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">vis</span><span class="o">.</span><span class="n">plot_feature_scatters</span><span class="p">(</span><span class="n">vae_df</span><span class="p">,</span> <span class="s1">&#39;external_gene_name&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">new_cols</span><span class="p">,</span> <span class="n">show_plt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fig_type</span><span class="o">=</span><span class="s2">&quot;png&quot;</span><span class="p">,</span>
+                          <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                          <span class="n">title</span><span class="o">=</span><span class="s2">&quot;latent space&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 144x144 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_1.png" src="../_images/examples_histone_example_11_1.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_2.png" src="../_images/examples_histone_example_11_2.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_3.png" src="../_images/examples_histone_example_11_3.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_4.png" src="../_images/examples_histone_example_11_4.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_5.png" src="../_images/examples_histone_example_11_5.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_6.png" src="../_images/examples_histone_example_11_6.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_7.png" src="../_images/examples_histone_example_11_7.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_8.png" src="../_images/examples_histone_example_11_8.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_9.png" src="../_images/examples_histone_example_11_9.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_10.png" src="../_images/examples_histone_example_11_10.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_11.png" src="../_images/examples_histone_example_11_11.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_12.png" src="../_images/examples_histone_example_11_12.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_13.png" src="../_images/examples_histone_example_11_13.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_14.png" src="../_images/examples_histone_example_11_14.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_15.png" src="../_images/examples_histone_example_11_15.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_16.png" src="../_images/examples_histone_example_11_16.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_17.png" src="../_images/examples_histone_example_11_17.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_18.png" src="../_images/examples_histone_example_11_18.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_19.png" src="../_images/examples_histone_example_11_19.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_20.png" src="../_images/examples_histone_example_11_20.png" />
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_21.png" src="../_images/examples_histone_example_11_21.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_11_22.png" src="../_images/examples_histone_example_11_22.png" />
+</div>
+</div>
+</div>
+<div class="section" id="Plot-specific-genes">
+<h2>Plot specific genes<a class="headerlink" href="#Plot-specific-genes" title="Permalink to this headline">¶</a></h2>
+<p>Since we love certain genes, lets have a look at where they are on the latent space</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">cool_genes</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;Emx1&#39;</span><span class="p">,</span> <span class="s1">&#39;Eomes&#39;</span><span class="p">,</span> <span class="s1">&#39;Tbr1&#39;</span><span class="p">,</span> <span class="s1">&#39;Foxg1&#39;</span><span class="p">,</span> <span class="s1">&#39;Lhx6&#39;</span><span class="p">,</span> <span class="s1">&#39;Arx&#39;</span><span class="p">,</span> <span class="s1">&#39;Dlx1&#39;</span><span class="p">,</span> <span class="s1">&#39;Dlx2&#39;</span><span class="p">,</span> <span class="s1">&#39;Dlx5&#39;</span><span class="p">,</span> <span class="s1">&#39;Nr2e2&#39;</span><span class="p">,</span> <span class="s1">&#39;Otx2&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;Hoxd8&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxd9&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxd10&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxd11&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxd12&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxd13&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxa7&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxa9&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxa10&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxa11&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Hoxa13&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;Hoxb9&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxb13&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxc8&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxc9&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxc10&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxc11&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxc12&#39;</span><span class="p">,</span> <span class="s1">&#39;Hoxc13&#39;</span><span class="p">],</span>
+              <span class="p">[</span><span class="s1">&#39;Ccna1&#39;</span><span class="p">,</span> <span class="s1">&#39;Ccna2&#39;</span><span class="p">,</span> <span class="s1">&#39;Ccnd1&#39;</span><span class="p">,</span> <span class="s1">&#39;Ccnd2&#39;</span><span class="p">,</span> <span class="s1">&#39;Ccnd3&#39;</span><span class="p">,</span> <span class="s1">&#39;Ccne1&#39;</span><span class="p">,</span> <span class="s1">&#39;Ccne2&#39;</span><span class="p">,</span> <span class="s1">&#39;Cdc25a&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;Cdc25b&#39;</span><span class="p">,</span> <span class="s1">&#39;Cdc25c&#39;</span><span class="p">,</span> <span class="s1">&#39;E2f1&#39;</span><span class="p">,</span> <span class="s1">&#39;E2f2&#39;</span><span class="p">,</span> <span class="s1">&#39;E2f3&#39;</span><span class="p">,</span> <span class="s1">&#39;Mcm10&#39;</span><span class="p">,</span> <span class="s1">&#39;Mcm5&#39;</span><span class="p">,</span> <span class="s1">&#39;Mcm3&#39;</span><span class="p">,</span> <span class="s1">&#39;Mcm2&#39;</span><span class="p">,</span> <span class="s1">&#39;Cip2a&#39;</span><span class="p">]</span>
+              <span class="p">]</span>
+
+<span class="n">vis</span><span class="o">.</span><span class="n">plot_values_on_scatters</span><span class="p">(</span><span class="n">vae_df</span><span class="p">,</span> <span class="s2">&quot;external_gene_name&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Forebrain&#39;</span><span class="p">,</span> <span class="s1">&#39;Spinal cord&#39;</span><span class="p">,</span> <span class="s1">&#39;Pro. Prolif.&#39;</span><span class="p">],</span>
+                            <span class="n">cool_genes</span><span class="p">,</span> <span class="n">show_plt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">fig_type</span><span class="o">=</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span>
+                            <span class="n">save_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Figure size 144x144 with 0 Axes&gt;
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/examples_histone_example_13_1.png" src="../_images/examples_histone_example_13_1.png" />
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+&lt;Axes3DSubplot:xlabel=&#39;Node 1&#39;, ylabel=&#39;Node 2&#39;&gt;
+</pre></div></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="configs.html" class="btn btn-neutral float-right" title="Config examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="python_example.html" class="btn btn-neutral float-left" title="IRIS dataset" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Ariane Mora
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

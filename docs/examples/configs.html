@@ -1,0 +1,385 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Config examples &mdash; scivae 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/theme_overrides.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="../_static/logo.png"/>
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script src="../_static/custom.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FAQ" href="../faq.html" />
+    <link rel="prev" title="Histone modification data" href="histone_example.html" />
+ 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html">
+          
+
+          
+            
+            <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">sci-VAE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installing/index.html">Installing sci-vae</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Running sci-vae</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="r_example.html">R example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="python_example.html">IRIS dataset</a></li>
+<li class="toctree-l1"><a class="reference internal" href="histone_example.html">Histone modification data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Config examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#single-layer-vae">Single layer VAE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-layer-vae">Multi layer VAE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multi-loss-multi-layer-vae">Multi loss &amp; multi layer VAE</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../faq.html">FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Change log</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../references.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">scivae</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Config examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            
+              <a href="https://github.com/arianemora/scivae/blob/main/docs_src/src/examples/configs.rst" class="fa fa-github"> Edit on GitHub</a>
+            
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  
+<style>
+/* CSS overrides for sphinx_rtd_theme */
+
+/* 24px margin */
+.nbinput.nblast.container,
+.nboutput.nblast.container {
+    margin-bottom: 19px;  /* padding has already 5px */
+}
+
+/* ... except between code cells! */
+.nblast.container + .nbinput.container {
+    margin-top: -19px;
+}
+
+.admonition > p:before {
+    margin-right: 4px;  /* make room for the exclamation icon */
+}
+
+/* Fix math alignment, see https://github.com/rtfd/sphinx_rtd_theme/pull/686 */
+.math {
+    text-align: unset;
+}
+</style>
+<div class="section" id="config-examples">
+<h1>Config examples<a class="headerlink" href="#config-examples" title="Permalink to this headline">¶</a></h1>
+<p>Examples for input files &amp; in depth description of parameters for configuring the VAE.</p>
+<p>The primary input for the VAE is the configuration, which is in the form of either a json string, or as a json file. We
+recommend using a json file, as it keeps things more organised but we allow for a json string anyway. Here we show
+some examples for both cases.</p>
+<p>Things to note: JSON format requires “double quotes” around strings!</p>
+<div class="section" id="single-layer-vae">
+<h2>Single layer VAE<a class="headerlink" href="#single-layer-vae" title="Permalink to this headline">¶</a></h2>
+<p>Example for single layer VAE below. Here we have a VAE that uses MMD for the latent space  with mean square error loss
+for the reconstruction loss. We have two latent nodes, and no internal layers (apart from the central one. We use adam
+optimiser with the default parameters (learning rate:  0.01, beta 1: 0.9 and, beta 2: 0.999.</p>
+<p>This VAE will work as so: input –&gt; 2 nodes –&gt; output size.</p>
+<p>JSON file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;loss&quot;</span><span class="p">:</span>
+ <span class="p">{</span><span class="nt">&quot;loss_type&quot;</span><span class="p">:</span> <span class="s2">&quot;mse&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;distance_metric&quot;</span><span class="p">:</span> <span class="s2">&quot;mmd&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;mmd_weight&quot;</span><span class="p">:</span> <span class="mf">1.0</span>
+ <span class="p">},</span>
+   <span class="nt">&quot;encoding&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;decoding&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;latent&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">2</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;optimiser&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;params&quot;</span><span class="p">:</span> <span class="p">{},</span> <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;adam&quot;</span>
+   <span class="p">}</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+<p>JSON string:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;{&quot;loss&quot;: {&quot;loss_type&quot;: &quot;mse&quot;, &quot;distance_metric&quot;: &quot;mmd&quot;, &quot;mmd_weight&quot;: 1.0}, &quot;encoding&quot;: {&quot;layers&quot;: []}, &quot;decoding&quot;: {&quot;layers&quot;: []}, &quot;latent&quot;: {&quot;num_nodes&quot;: 2}, &quot;optimiser&quot;: {&quot;params&quot;: {}, &quot;name&quot;: &quot;adam&quot;}}&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="multi-layer-vae">
+<h2>Multi layer VAE<a class="headerlink" href="#multi-layer-vae" title="Permalink to this headline">¶</a></h2>
+<p>Example for mutli-layer VAE below. As above except with multiple layers (both in encoding and decoding, we have one
+encoding layer, and two decoding layers, and 5 latent nodes. Here we use cross entropy as opposed to MSE and KL divergence
+as opposed to MMD. We also set specific parameters for the optimiser.</p>
+<p>For each layer you need to specify the number of node and the activation function (e.g. selu, relu, etc –&gt; this should
+work with any of the keras activation strings.</p>
+<p>This VAE will work as so: input –&gt; 64 nodes –&gt; 5 nodes –&gt; 32 nodes –&gt; 64 nodes –&gt; output size.</p>
+<p>JSON file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;loss&quot;</span><span class="p">:</span>
+ <span class="p">{</span><span class="nt">&quot;loss_type&quot;</span><span class="p">:</span> <span class="s2">&quot;ce&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;distance_metric&quot;</span><span class="p">:</span> <span class="s2">&quot;kl&quot;</span>
+ <span class="p">},</span>
+   <span class="nt">&quot;encoding&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+                 <span class="p">{</span><span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="nt">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;selu&quot;</span><span class="p">}</span>
+         <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;decoding&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+                 <span class="p">{</span><span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="nt">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;relu&quot;</span><span class="p">},</span>
+                 <span class="p">{</span><span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span> <span class="nt">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;selu&quot;</span><span class="p">}</span>
+         <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;latent&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">5</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;optimiser&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="nt">&quot;beta_1&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="nt">&quot;beta_2&quot;</span><span class="p">:</span> <span class="mf">0.97</span><span class="p">},</span>
+     <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;adamax&quot;</span>
+   <span class="p">}</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+<p>JSON string:</p>
+</div>
+<div class="section" id="multi-loss-multi-layer-vae">
+<h2>Multi loss &amp; multi layer VAE<a class="headerlink" href="#multi-loss-multi-layer-vae" title="Permalink to this headline">¶</a></h2>
+<p>Here we have multiple layers and also multiple loss functions (i.e. we want to integrate binary and continuous data).
+FYI I have no idea what the mathematical implications are of joining these! Intuitively I assume it’s not going to be
+great so use at your own risk!!! If you just want to tie the different outputs (i.e. use MSE for both outputs then I
+don’t think there is too much of an issue <strong>“multi_loss”: [“mse”, “mse”],</strong>).</p>
+<p>To enable use to use a multiple loss, we need to define which of the input columns will be tied to each loss. We only
+allow the columns to be sequential (defined in <strong>multi_sizes</strong>), i.e. in this case we have in input of 60 columns, the first 40 will be “tied together”
+in the last layer, and the last 20 will be “tied together”. i.e. the VAE will look like:</p>
+<p>JSON file:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;loss&quot;</span><span class="p">:</span>
+ <span class="p">{</span><span class="nt">&quot;loss_type&quot;</span><span class="p">:</span> <span class="s2">&quot;multi&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;distance_metric&quot;</span><span class="p">:</span> <span class="s2">&quot;mmd&quot;</span><span class="p">,</span>
+   <span class="nt">&quot;mmd_weight&quot;</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+   <span class="nt">&quot;multi_loss&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;mse&quot;</span><span class="p">,</span> <span class="s2">&quot;mse&quot;</span><span class="p">]</span>
+ <span class="p">},</span>
+   <span class="nt">&quot;encoding&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+                 <span class="p">{</span><span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nt">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;selu&quot;</span><span class="p">}</span>
+         <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;decoding&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;layers&quot;</span><span class="p">:</span> <span class="p">[</span>
+                 <span class="p">{</span><span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nt">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;relu&quot;</span><span class="p">},</span>
+                 <span class="p">{</span><span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="nt">&quot;activation_fn&quot;</span><span class="p">:</span> <span class="s2">&quot;selu&quot;</span><span class="p">}</span>
+         <span class="p">]</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;latent&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;num_nodes&quot;</span><span class="p">:</span> <span class="mi">5</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;optimiser&quot;</span><span class="p">:</span> <span class="p">{</span>
+     <span class="nt">&quot;params&quot;</span><span class="p">:</span> <span class="p">{</span><span class="nt">&quot;learning_rate&quot;</span><span class="p">:</span> <span class="mf">0.001</span><span class="p">,</span> <span class="nt">&quot;beta_1&quot;</span><span class="p">:</span> <span class="mf">0.8</span><span class="p">,</span> <span class="nt">&quot;beta_2&quot;</span><span class="p">:</span> <span class="mf">0.97</span><span class="p">},</span>
+     <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;adamax&quot;</span>
+   <span class="p">},</span>
+   <span class="nt">&quot;multi_sizes&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">40</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../faq.html" class="btn btn-neutral float-right" title="FAQ" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="histone_example.html" class="btn btn-neutral float-left" title="Histone modification data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Ariane Mora
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
