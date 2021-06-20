@@ -170,6 +170,7 @@ class TestVAE(unittest.TestCase):
             vis.plot_top_values_by_rank(vis_df, ["vae_0", "vae_1", "vae_2"], cols, "gene_name", num_values=10,
                                         cluster_rows=False)
             vis.plot_feature_scatters(vae_df, 'gene_name', columns=cols, show_plt=True, fig_type=".png", save_fig=True,
+                                      output_dir='test_figures/',
                                       title="cX DepthshadeTrue latent space")
             vis.plot_node_hists(show_plt=True, save_fig=False)
             vis.plot_node_hists(show_plt=True, save_fig=False, method="z_mean")
