@@ -17,9 +17,6 @@ Python using pip
 R
 --
 I will add it as an R package soon, but until then check out the R example using Reticulate!
-.. code-block:: R
-
-    install.packages("scivae")
 
 **Note**: if you are using R you need to make sure you have python installed. We strongly recommend using `anaconda <https://docs.conda.io/en/latest/miniconda.html/>`_
 and creating an envrironment and then installing scivae in a particular envrionment using `reticulate <https://rstudio.github.io/reticulate/>`_.

@@ -35,7 +35,9 @@ Running sci-vae
 
 3. Look at a python example notebook with output (:ref:`notebook <examples/python_example>`)
 
-4. Details about json config (:ref:`cli <examples/configs>`)
+4. Look at a python example notebook with histone modification data (:ref:`notebook <examples/histone_example>`)
+
+5. Details about json config (:ref:`cli <examples/configs>`)
 
 Extending sci-vae
 =================
@@ -61,6 +63,7 @@ Sci-vae can be cited as in :ref:`references`, where we also provide citations fo
 
    examples/r_example
    examples/python_example
+   examples/histone_example
    examples/configs
 
 

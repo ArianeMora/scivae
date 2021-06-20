@@ -1,7 +1,4 @@
----
-title: "scivae example"
-output: html_notebook
----
+# R example
 
 ## Setup a python environment
 If you already have one just skip this!
