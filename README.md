@@ -1,5 +1,9 @@
 # scivae
 
+Check out our docs: https://arianemora.github.io/scivae/  
+
+If you use this please cite: https://doi.org/10.1101/2021.06.22.449386
+
 scivae is a wrapper around the keras AE that allows you to build/save/visualise with a variational autoencoder.
 
 Blogs & notebooks used as references are noted in the code and a couple at the end of this README.
