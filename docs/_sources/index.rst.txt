@@ -2,6 +2,7 @@
 sci-VAE
 *******
 
+If you use this please cite: https://doi.org/10.1101/2021.06.22.449386
 
 Sci-VAE is an implementation of a variational autoencoder in Keras that was developed to use VAEs to integrate
 biological data. The implementation allows for customisations to the VAE to be passed in via CLI (and a JSON file) or
