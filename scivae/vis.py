@@ -16,7 +16,7 @@
 ###############################################################################
 
 from scivae import VAE
-from sciviso import Heatmap
+from sciviso import Heatmap, Histogram, Scatterplot
 import seaborn as sns
 from scipy import stats
 from sciutil import SciUtil
@@ -43,44 +43,36 @@ class Vis:
              '#D09139', '#338A03', '#FF69A1', '#5930B1', '#FFE884', '#35B567', '#1E88E5',
              '#ACAD60', '#A2FFB4', '#B618F5', '#854A9C']
         self.df = None
-        self.label_font_size = 6
-        self.title_font_size = 8
+        self.label_font_size = 8
+        self.title_font_size = 10
         self.title_font_weight = 700
-        self.fig_size = (3, 3)
+        self.fig_size = (2, 2)
         sns.set_style('ticks')
+        self.alpha = 0.6
         rcParams['figure.figsize'] = self.fig_size
         sns.set_context("paper", rc={"font.size": self.label_font_size, "axes.titlesize": self.title_font_size,
                                      "axes.labelsize": self.label_font_size,
                                      'figure.figsize': self.fig_size})
+        self.style = {}
 
     def plot_input_distribution(self, df: pd.DataFrame, row_id="", columns=None, nbins=20, ymax=None, output_dir="",
                                 c="grey", fig_type='svg', show_plt=False, save_fig=True):
         columns = columns if columns is not None else [c for c in df.columns if c != row_id]
 
         for column in columns:
-            fig, ax = plt.subplots(figsize=(1.5, 1.5))
-            if ymax:
-                ax.hist(df[column].values, bins=nbins, color=c, ymax=ymax, edgecolor="black", linewidth=0.5)
-            else:
-                ax.hist(df[column].values, bins=nbins, color=c, edgecolor="black", linewidth=0.5)
-            ax.tick_params(labelsize=self.label_font_size)
-            plt.title(f'Hist_{column}', fontsize=self.title_font_size, fontweight=self.title_font_weight)
-            ax.tick_params(direction='out', length=2, width=0.5)
-            ax.spines['bottom'].set_linewidth(0.5)
-            ax.spines['top'].set_linewidth(0)
-            ax.spines['left'].set_linewidth(0.5)
-            ax.spines['right'].set_linewidth(0)
-            ax.tick_params(labelsize=self.label_font_size)
-            ax.tick_params(axis='x', which='major', pad=2.0)
-            ax.tick_params(axis='y', which='major', pad=2.0)
-
-            if save_fig:
-                plt.savefig(os.path.join(output_dir, f'Hist_{column}.{fig_type}'))
-            if show_plt:
-                plt.show()
+            try:
+                hist = Histogram(df, column, title=column.replace('_', ' '), bins=nbins, colour=c, max_y=ymax)
+                hist.load_style(self.style)
+                hist.plot()
+                if save_fig:
+                    plt.savefig(os.path.join(output_dir, f'Hist_{column}.{fig_type}'))
+                if show_plt:
+                    plt.show()
+            except:
+                self.u.warn_p(["plot_input_distribution: Unable to plot histogram for column:", column])
 
     def plot_feature_correlation(self, df: pd.DataFrame, row_id="", columns=None, output_dir="", vmin=-1, vmax=1, fig_type='svg',
-                                cluster_cols=True, cluster_rows=True, print_vals=True, cmap='seismic',
+                                cluster_cols=True, cluster_rows=True, print_vals=True, cmap='RdBu_r',
                                  title="RCM heatmap of feature correlation", show_plt=False, save_fig=True):
         heatmap_df = pd.DataFrame()
         lbls = []
@@ -105,7 +97,7 @@ class Vis:
         heatmap = Heatmap(heatmap_df, lbls, 'labels',
                           title=f'{title}',
                           cluster_cols=cluster_cols, cluster_rows=cluster_rows,
-                          vmin=vmin, vmax=vmax, cmap=cmap
+                          vmin=vmin, vmax=vmax, cmap=cmap, figsize=(2, 2)
                           )
         set_style(self.fig_size, self.label_font_size)
         g = heatmap.plot()
@@ -116,7 +108,7 @@ class Vis:
         return heatmap_df
 
     def plot_top_values_by_rank(self, df: pd.DataFrame, rank_colums: list, vis_columns: list, id_col: str,
-                                num_values=10, cmap='seismic',
+                                num_values=10, cmap='RdBu_r',
                                 fig_type='svg', cluster_cols=True, cluster_rows=True, output_dir="",
                                 title="Ranked top values", show_plt=False, save_fig=True):
         """
@@ -178,7 +170,7 @@ class Vis:
         plt.show()
 
     def plot_node_correlation(self, output_dir="", vmin=-1, vmax=1, fig_type='svg',
-                                cluster_cols=True, cluster_rows=True, print_vals=True, cmap='seismic',
+                                cluster_cols=True, cluster_rows=True, print_vals=True, cmap='RdBu_r',
                                  title="RCM heatmap of node correlation", show_plt=False, save_fig=True):
         heatmap_df = pd.DataFrame()
         lbls = []
@@ -210,7 +202,7 @@ class Vis:
         heatmap = Heatmap(heatmap_df, lbls, 'labels',
                           title=f'{title}',
                           cluster_cols=cluster_cols, cluster_rows=cluster_rows,
-                          vmin=vmin, vmax=vmax, cmap=cmap
+                          vmin=vmin, vmax=vmax, cmap=cmap, figsize=self.fig_size
                           )
         set_style(self.fig_size, self.label_font_size)
         heatmap.plot()
@@ -221,7 +213,7 @@ class Vis:
         return heatmap_df
 
     def plot_node_feature_correlation(self, df: pd.DataFrame, row_id: str, vae_data=None, columns=None, output_dir="", vmin=-1, vmax=1, fig_type='svg',
-                                cluster_cols=True, cluster_rows=True, print_vals=True, encoding_type="z", cmap='seismic',
+                                cluster_cols=True, cluster_rows=True, print_vals=True, encoding_type="z", cmap='RdBu_r',
                                  title="RCM heatmap of node feature correlation", show_plt=False, save_fig=True):
         set_style(self.fig_size, self.label_font_size)
         heatmap_df = pd.DataFrame()
@@ -263,7 +255,7 @@ class Vis:
         heatmap = Heatmap(heatmap_df, cols, 'labels',
                           title=f'{title}',
                           cluster_cols=cluster_cols, cluster_rows=cluster_rows,
-                          vmin=vmin, vmax=vmax)
+                          vmin=vmin, vmax=vmax, figsize=self.fig_size)
         set_style(self.fig_size, self.label_font_size)
         heatmap.plot()
         if save_fig:
@@ -282,21 +274,11 @@ class Vis:
         data = self.vae.get_encoded_data(method)
         num_nodes = len(data[0])
         for i in range(0, num_nodes):
-            fig, ax = plt.subplots(figsize=(1.5, 1.5))
-            if ymax:
-                ax.hist(data[:, i], bins=nbins, color=c, ymax=ymax, edgecolor="black", linewidth=0.5)
-            else:
-                ax.hist(data[:, i], bins=nbins, color=c, edgecolor="black", linewidth=0.5)
-            plt.title(f'Hist_Node-{i + 1}', fontsize=self.title_font_size, fontweight=self.title_font_weight)
-            ax.tick_params(labelsize=self.label_font_size)
-            ax.tick_params(direction='out', length=2, width=0.5)
-            ax.spines['bottom'].set_linewidth(0.5)
-            ax.spines['top'].set_linewidth(0)
-            ax.spines['left'].set_linewidth(0.5)
-            ax.spines['right'].set_linewidth(0)
-            ax.tick_params(labelsize=self.label_font_size)
-            ax.tick_params(axis='x', which='major', pad=2.0)
-            ax.tick_params(axis='y', which='major', pad=2.0)
+            tmp_df = pd.DataFrame()
+            tmp_df[f'Node {i + 1}'] = data[:, i]
+            hist = Histogram(tmp_df, f'Node {i + 1}', title=f'Node {i + 1}', bins=nbins, max_y=ymax, colour=c)
+            hist.load_style(self.style)
+            hist.plot()
 
             if save_fig:
                 plt.savefig(os.path.join(output_dir, f'Hist_Node-{i + 1}.{fig_type}'))
@@ -320,11 +302,14 @@ class Vis:
 
                 i += 1
             g_i += 1
-        return row_idxs
+        row_idxs_lst = []
+        for g in row_labels:
+            row_idxs_lst.append(row_idxs.get(g))
+        return row_idxs_lst
 
     def plot_feature_scatters(self, df: pd.DataFrame, row_id: str, vae_data=None, columns=None, output_dir="", fig_type='svg',
                               vmin=None, vmax=None,
-                              title="latent space", show_plt=False, save_fig=True, encoding_type="z", angle_plot=0, cmap='seismic'):
+                              title="latent space", show_plt=False, save_fig=True, encoding_type="z", angle_plot=0, cmap='RdBu_r'):
         set_style(self.fig_size, self.label_font_size)
         columns = columns if columns is not None else [c for c in df.columns if c != row_id]
         if not self.vae:
@@ -347,36 +332,18 @@ class Vis:
                            "\nWe won't plot this ... returning"])
             return
         for column in columns:
-            if num_nodes == 3:
-                fig = plt.figure()
-                ax = fig.add_subplot(111, projection='3d')
-                sc = ax.scatter(data[:, 0],
-                                data[:, 1],
-                                data[:, 2],
-                                depthshade=True,
-                                alpha=0.9,
-                                cmap=cmap,
-                                vmin=vmin, vmax=vmax,
-                                c=pd.to_numeric(df[column].values, errors='coerce'),
-                                linewidths=0.0)
-                ax.set_zlabel('Node 3', fontsize=self.label_font_size)
-                # remove fill
-                ax.xaxis.pane.fill = False
-                ax.yaxis.pane.fill = False
-                ax.zaxis.pane.fill = False
+            vis_df = pd.DataFrame()
+            vis_df[row_id] = df[row_id].values
+            vis_df[f'Dim. 1'] = data[:, 0]
+            vis_df[f'Dim. 2'] = data[:, 1]
+            if num_nodes == 2:
+                scatter = Scatterplot(vis_df, f'Dim. 1', f'Dim. 2', f'{column} {title}', f'Dim. 1', f'Dim. 2',
+                                      colour=pd.to_numeric(df[column].values), )
             else:
-                fig, ax = plt.subplots()
-                sc = ax.scatter(data[:, 0],
-                                data[:, 1], alpha=0.9, cmap=cmap,
-                                linewidths=0.0,
-                                vmin=vmin, vmax=vmax,
-                                c=pd.to_numeric(df[column].values, errors='coerce'),
-                                facecolors=pd.to_numeric(df[column].values, errors='coerce'))
-            ax.set_xlabel('Node 1', fontsize=self.label_font_size)
-            ax.set_ylabel('Node 2', fontsize=self.label_font_size)
-            ax.tick_params(labelsize=self.label_font_size)
-            fig.colorbar(sc)
-            plt.title(f'{column} {title}', fontsize=self.title_font_size, fontweight=self.title_font_weight)
+                vis_df[f'Dim. 3'] = data[:, 2]
+                scatter = Scatterplot(vis_df, f'Dim. 1', f'Dim. 2', f'{column} {title}', f'Dim. 1', f'Dim. 2', z=f'Dim. 3',
+                                      colour=pd.to_numeric(df[column].values))
+            ax = scatter.plot()
             if save_fig:
                 plt.savefig(os.path.join(output_dir, f'Scatter_{column}_{title.replace(" ", "_")}.{fig_type}'))
             if show_plt:
@@ -388,8 +355,9 @@ class Vis:
                     plt.savefig(os.path.join(output_dir, f'Scatter_{column}_{title.replace(" ", "_")}_{ii}.{fig_type}'))
 
     def plot_values_on_scatters(self, df: pd.DataFrame, row_id: str, row_labels: list, row_values: list, vae_data=None,
-                               output_dir="", fig_type='svg', title="RCM genes on latent space", plt_bg=False, show_plt=False,
-                               save_fig=True, color_map=None, angle_plot=None, encoding_type="z"):
+                                output_dir="", fig_type='svg', title="RCM genes on latent space", plt_bg=False,
+                                show_plt=False,
+                                save_fig=True, color_map=None, angle_plot=None, encoding_type="z"):
         set_style(self.fig_size, self.label_font_size)
         marker_idxs = self.get_row_idxs(df, row_id, row_labels, row_values)
 
@@ -414,75 +382,24 @@ class Vis:
             return
         i = 0
         if color_map is None:
-            color_map = {}
+            color_map = []
             for c in row_labels:
-                color_map[c] = self.colours[i]
+                color_map.append(self.colours[i])
                 i += 1
                 if i > len(self.colours):
                     i = 0
-        if plt_bg:
-            labels = ["None"]
+
+        vis_df = pd.DataFrame()
+        vis_df[row_id] = df[row_id].values
+        vis_df[f'Dim. 1'] = data[:, 0]
+        vis_df[f'Dim. 2'] = data[:, 1]
+        if num_nodes == 2:
+            scatter = Scatterplot(vis_df, f'Dim. 1', f'Dim. 2', f'{title}', f'Dim. 1', f'Dim. 2')
+            ax = scatter.plot_groups_2D(row_labels, marker_idxs, color_map, alpha_bg=0.1)
         else:
-            labels = []
-        fig, ax = None, None
-        max_size = len(data) - 1
-        if len(data) > 500:
-            max_size = 500
-        rand_idxs = random.sample(range(1, len(data)), max_size)
-
-        if num_nodes == 3:
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection='3d')
-            if plt_bg:
-                ax.scatter(data[rand_idxs, 0],
-                           data[rand_idxs, 1],
-                           data[rand_idxs, 2],
-                           depthshade=True,
-                           c='lightgrey', alpha=0.3)
-        else:
-            fig, ax = plt.subplots()
-            if plt_bg:
-                ax.scatter(data[rand_idxs, 0],
-                           data[rand_idxs, 1],
-                           c='lightgrey', alpha=1.0)
-        for c in marker_idxs:
-            if num_nodes == 3:
-                ax.scatter(data[marker_idxs[c], 0],
-                           data[marker_idxs[c], 1],
-                           data[marker_idxs[c], 2], alpha=0.9,
-                           c=color_map[c], edgecolors='k', linewidth=0.2)
-                ax.set_zlabel('Node 3', fontsize=self.label_font_size)
-                labels.append(c)
-                ax.spines['bottom'].set_linewidth(0.5)
-                ax.spines['top'].set_linewidth(0.5)
-                ax.spines['left'].set_linewidth(0.5)
-                ax.spines['right'].set_linewidth(0.5)
-                ax.tick_params(labelsize=6)
-                ax.tick_params(axis='x', which='major', pad=0)
-                ax.tick_params(axis='y', which='major', pad=0)
-                ax.tick_params(axis='z', which='major', pad=0)
-                # remove fill
-                ax.xaxis.pane.fill = False
-                ax.yaxis.pane.fill = False
-                ax.zaxis.pane.fill = False
-            else:
-                ax.scatter(data[marker_idxs[c], 0],
-                           data[marker_idxs[c], 1], alpha=0.9,
-                           c=color_map[c], edgecolors='k', linewidth=0.2)
-                labels.append(c)
-                ax.tick_params(direction='out', length=2, width=0.5)
-                ax.spines['bottom'].set_linewidth(0.5)
-                ax.spines['top'].set_linewidth(0.5)
-                ax.spines['left'].set_linewidth(0.5)
-                ax.spines['right'].set_linewidth(0.5)
-                ax.tick_params(labelsize=6)
-                ax.tick_params(axis='x', which='major', pad=0)
-                ax.tick_params(axis='y', which='major', pad=0)
-
-        ax.set_xlabel('Node 1', fontsize=self.label_font_size)
-        ax.set_ylabel('Node 2', fontsize=self.label_font_size)
-
-        ax.legend(labels, loc='center left', bbox_to_anchor=(1, 0.5), fontsize=self.label_font_size)
+            vis_df[f'Dim. 3'] = data[:, 2]
+            scatter = Scatterplot(vis_df, f'Dim. 1', f'Dim. 2', f'{title}', f'Dim. 1', f'Dim. 2', z=f'Dim. 3')
+            ax = scatter.plot_groups_3D(row_labels, marker_idxs, color_map, alpha_bg=0.1)
         if save_fig:
             plt.savefig(os.path.join(output_dir, f'Scatter-genes_{title.replace(" ", "_")}.{fig_type}'))
         if show_plt:
