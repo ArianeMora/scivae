@@ -23,7 +23,6 @@ from sciutil import SciUtil
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 from statsmodels.stats.multitest import multipletests
-import random
 import matplotlib
 from matplotlib import rcParams
 import pandas as pd
@@ -56,16 +55,17 @@ class Vis:
         self.style = {}
 
     def plot_input_distribution(self, df: pd.DataFrame, row_id="", columns=None, nbins=20, ymax=None, output_dir="",
-                                c="grey", fig_type='svg', show_plt=False, save_fig=True):
+                                c="grey", fig_type='svg', title="", show_plt=False, save_fig=True):
         columns = columns if columns is not None else [c for c in df.columns if c != row_id]
 
         for column in columns:
+            set_style(self.fig_size, self.label_font_size)
             try:
                 hist = Histogram(df, column, title=column.replace('_', ' '), bins=nbins, colour=c, max_y=ymax)
                 hist.load_style(self.style)
                 hist.plot()
                 if save_fig:
-                    plt.savefig(os.path.join(output_dir, f'Hist_{column}.{fig_type}'))
+                    plt.savefig(os.path.join(output_dir, f'{title}_Hist_{column}.{fig_type}'))
                 if show_plt:
                     plt.show()
             except:
@@ -97,9 +97,8 @@ class Vis:
         heatmap = Heatmap(heatmap_df, lbls, 'labels',
                           title=f'{title}',
                           cluster_cols=cluster_cols, cluster_rows=cluster_rows,
-                          vmin=vmin, vmax=vmax, cmap=cmap, figsize=(2, 2)
+                          vmin=vmin, vmax=vmax, cmap=cmap, figsize=(4, 4)
                           )
-        set_style(self.fig_size, self.label_font_size)
         g = heatmap.plot()
         if save_fig:
             plt.savefig(os.path.join(output_dir, f'Heatmap_{title.replace(" ", "")}.{fig_type}'))
@@ -255,17 +254,17 @@ class Vis:
         heatmap = Heatmap(heatmap_df, cols, 'labels',
                           title=f'{title}',
                           cluster_cols=cluster_cols, cluster_rows=cluster_rows,
-                          vmin=vmin, vmax=vmax, figsize=self.fig_size)
-        set_style(self.fig_size, self.label_font_size)
+                          vmin=vmin, vmax=vmax, figsize=(3, 2))
         heatmap.plot()
         if save_fig:
             plt.savefig(os.path.join(output_dir, f'Heatmap_{title.replace(" ", "_")}.{fig_type}'))
         if show_plt:
             plt.show()
+        set_style(self.fig_size, self.label_font_size)
         return heatmap_df
 
     def plot_node_hists(self, nbins=20, ymax=None, output_dir="", c="grey", fig_type='svg', method="z",
-                        show_plt=False, save_fig=True):
+                        show_plt=False, save_fig=True, title=""):
         if not self.vae:
             self.u.err_p(["plot_node_correlation: You haven't run the VAE yet! "
                           "Please run compute_vae before attempting to plot."])
@@ -274,14 +273,15 @@ class Vis:
         data = self.vae.get_encoded_data(method)
         num_nodes = len(data[0])
         for i in range(0, num_nodes):
+            set_style(self.fig_size, self.label_font_size)
             tmp_df = pd.DataFrame()
             tmp_df[f'Node {i + 1}'] = data[:, i]
-            hist = Histogram(tmp_df, f'Node {i + 1}', title=f'Node {i + 1}', bins=nbins, max_y=ymax, colour=c)
+            hist = Histogram(tmp_df, f'Node {i + 1}', title=f'{title} Node {i + 1}', bins=nbins, max_y=ymax, colour=c)
             hist.load_style(self.style)
             hist.plot()
 
             if save_fig:
-                plt.savefig(os.path.join(output_dir, f'Hist_Node-{i + 1}.{fig_type}'))
+                plt.savefig(os.path.join(output_dir, f'{title}_Hist_Node-{i + 1}.{fig_type}'))
             if show_plt:
                 plt.show()
             plt.clf()
@@ -396,11 +396,11 @@ class Vis:
         if num_nodes == 2:
             scatter = Scatterplot(vis_df, f'Dim. 1', f'Dim. 2', f'{title}', f'Dim. 1', f'Dim. 2')
             ax = scatter.plot_groups_2D(row_labels, marker_idxs, color_map, alpha_bg=0.1)
+            plt.savefig(os.path.join(output_dir, f'Scatter-genes_{title.replace(" ", "_")}.{fig_type}'))
         else:
             vis_df[f'Dim. 3'] = data[:, 2]
             scatter = Scatterplot(vis_df, f'Dim. 1', f'Dim. 2', f'{title}', f'Dim. 1', f'Dim. 2', z=f'Dim. 3')
             ax = scatter.plot_groups_3D(row_labels, marker_idxs, color_map, alpha_bg=0.1)
-        if save_fig:
             plt.savefig(os.path.join(output_dir, f'Scatter-genes_{title.replace(" ", "_")}.{fig_type}'))
         if show_plt:
             plt.show()
@@ -409,6 +409,7 @@ class Vis:
             for ii in range(0, 360, angle_plot):
                 ax.view_init(elev=10., azim=ii)
                 plt.savefig(os.path.join(output_dir, f'Scatter-genes_{title.replace(" ", "_")}_{ii}.{fig_type}'))
+        set_style(self.fig_size, self.label_font_size)
         return ax
 
 
