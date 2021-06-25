@@ -8,7 +8,7 @@ sklearn
 tensorflow
 tensorflow-probability
 seaborn
-sciviso>=1.0.1
+sciviso>=1.0.3
 statsmodels
 jupyterlab
 scivae>=1.0.2
