@@ -17,10 +17,9 @@
 
 from sciutil import SciUtil, SciException
 
-from keras import backend as K
+from tensorflow.keras import backend as K
 import tensorflow as tf
 import tensorflow_probability as tfp
-import math
 
 
 class LossException(SciException):

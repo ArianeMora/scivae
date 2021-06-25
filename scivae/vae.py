@@ -15,18 +15,18 @@
 #                                                                             #
 ###############################################################################
 
-from keras.layers import Lambda, Input, Dense, BatchNormalization, Concatenate
-from keras.models import Model
-from keras import backend as K
-from keras import optimizers
+from tensorflow.keras.layers import Lambda, Input, Dense, BatchNormalization, Concatenate
+from tensorflow.keras.models import Model
+from tensorflow.keras import backend as K
+from tensorflow.keras import optimizers
 import tensorflow as tf
 import numpy as np
 from datetime import datetime
-from keras.callbacks import CSVLogger
+from tensorflow.keras.callbacks import CSVLogger
 from numpy.random import seed
 import pickle
 from sklearn.preprocessing import MinMaxScaler
-from keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import TensorBoard
 import json
 import math
 from sciutil import SciException, SciUtil
