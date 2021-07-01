@@ -314,8 +314,11 @@ class VAE(object):
         self.vae.add_loss(self.loss.get_loss(self.inputs_x, self.outputs_y, self.latent_z, self.latent_z_mean,
                                   self.latent_z_log_sigma))
 
-    def compile(self, optimizer=None):
+    def compile(self, optimizer=None, optimizer_config=None):
         optimizer = optimizer if optimizer is not None else self.optimiser(self.config['optimiser']['name'], self.config['optimiser']['params'])
+        if optimizer_config:
+            # Reinitialise
+            optimizer.from_config(optimizer_config)
         self.vae.compile(optimizer=optimizer)
         print(self.vae.summary())
 
@@ -542,12 +545,22 @@ class VAE(object):
         self.u.err_p([msg])
         raise VAEException(msg)
 
-    def save(self, weight_file_path='model_weights.h5', optimizer_file_path='model_optimiser.pkl',
+    def save(self, weight_file_path='model_weights.h5', optimizer_file_path='model_optimiser.json',
              config_json='config.json', save_data=False, data_filename='data.csv'):
         """ Save data, design, and optimiser state for recreation of VAE. """
         self.vae.save_weights(weight_file_path)
-        with open(optimizer_file_path, 'wb') as f:
-            pickle.dump(self.vae.optimizer, f)
+        # For older version of Keras and TF
+        # with open(optimizer_file_path, 'wb') as f:
+        #     pickle.dump(self.vae.optimizer.get_config(), f)
+        # for new versions
+        with open(optimizer_file_path, 'w+') as f:
+            config_optimiser = self.vae.optimizer.get_config()
+            for c in config_optimiser:
+                try:  # Doesn't like the numpy 32 float version for saving json so convert to a normal float
+                    config_optimiser[c] = float(config_optimiser[c])
+                except:  # Just means this is non-numerical
+                    x = 1
+            json.dump(config_optimiser, f)
         # Save the user options as a json file.
         with open(config_json, 'w+') as f:
             json.dump(self.config, f)
@@ -558,7 +571,7 @@ class VAE(object):
             with open(f'output_{data_filename}', 'wb') as f:
                 pickle.dump(self.output_data_np, f)
 
-    def load(self, weight_file_path='model_weights.h5', optimizer_file_path='model_optimiser.pkl',
+    def load(self, weight_file_path='model_weights.h5', optimizer_file_path='model_optimiser.json',
              config_json='config.json', load_data=False, data_filename='data.csv'):
         """ Load previously saved config and data"""
         # Load the users config file
@@ -576,5 +589,10 @@ class VAE(object):
         # Load weights
         self.vae.load_weights(weight_file_path)
         # Load the optimiser
-        with open(optimizer_file_path, 'rb') as f:
-            self.compile(pickle.load(f))
+        # Again below is for old versions
+        # with open(optimizer_file_path, 'rb') as f:
+        #     self.compile(pickle.load(f))
+        # For new versions:
+        with open(optimizer_file_path, 'r+') as f:
+            optimiser_config = json.load(f)
+            self.compile(optimizer_config=optimiser_config)

@@ -85,7 +85,6 @@ class TestVAE(unittest.TestCase):
                                     cool_genes, show_plt=True, fig_type=".png",
                                     save_fig=False)
 
-
     def test_saving(self):
         vae_df = pd.read_csv(os.path.join(self.data_dir, 'vis.csv'))
         cols = ['sepal_length', 'sepal_width', 'petal_length']

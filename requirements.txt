@@ -12,5 +12,5 @@ sciviso>=1.0.3
 statsmodels
 jupyterlab
 scivae>=1.0.2
-Keras==2.4.3
-Keras-Applications==1.0.8
+Keras>-2.4.3
+Keras-Applications>=1.0.8
