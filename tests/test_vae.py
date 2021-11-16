@@ -114,7 +114,7 @@ class TestVAE(unittest.TestCase):
             vis_df["vae_1"] = data[:, 1]
             vis_df["vae_2"] = data[:, 2]
             vis.plot_top_values_by_rank(vis_df, ["vae_0", "vae_1", "vae_2"], cols, "gene_name", num_values=3,
-                                        cluster_rows=False, show_plt=True, save_fig=False, title="Saved VAE")
+                                        show_plt=True, save_fig=False, title="Saved VAE")
 
             # Compare this to the old vae
             data = vae.encode_new_data(scaled_vals, encoding_type="z")
@@ -125,7 +125,7 @@ class TestVAE(unittest.TestCase):
             vis_df["vae_1"] = data[:, 1]
             vis_df["vae_2"] = data[:, 2]
             vis.plot_top_values_by_rank(vis_df, ["vae_0", "vae_1", "vae_2"], cols, "gene_name", num_values=3,
-                                        cluster_rows=False, show_plt=True, save_fig=False, title="OG VAE")
+                                        show_plt=True, save_fig=False, title="OG VAE")
 
             vae.set_seed()
             data = vae.encode_new_data(scaled_vals, encoding_type="z")
@@ -137,7 +137,7 @@ class TestVAE(unittest.TestCase):
             vis_df["vae_1"] = data[:, 1]
             vis_df["vae_2"] = data[:, 2]
             vis.plot_top_values_by_rank(vis_df, ["vae_0", "vae_1", "vae_2"], cols, "gene_name", num_values=3,
-                                        cluster_rows=False, show_plt=True, save_fig=False, title="OG VAE")
+                                        show_plt=True, save_fig=False, title="OG VAE")
 
     def test_vis(self):
         vae_df = pd.read_csv(os.path.join(self.data_dir, 'vis.csv'))
@@ -167,7 +167,7 @@ class TestVAE(unittest.TestCase):
             vis_df["vae_1"] = data[:, 1]
             vis_df["vae_2"] = data[:, 2]
             vis.plot_top_values_by_rank(vis_df, ["vae_0", "vae_1", "vae_2"], cols, "gene_name", num_values=10,
-                                        cluster_rows=False)
+                                        user_config={'cluster_rows': False})
             vis.plot_feature_scatters(vae_df, 'gene_name', columns=cols, show_plt=True, fig_type=".png", save_fig=True,
                                       output_dir='test_figures/',
                                       title="cX DepthshadeTrue latent space")

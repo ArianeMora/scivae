@@ -28,10 +28,8 @@ import pickle
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.callbacks import TensorBoard
 import json
-import math
 from sciutil import SciException, SciUtil
 from scivae import Loss
-import os
 
 
 class VAEException(SciException):
@@ -478,6 +476,17 @@ class VAE(object):
         self.u.err_p([msg])
         raise VAEException(msg)
 
+    def set_nodes(self, layer_num: int, num_nodes: int, layer_type: str):
+        """ 
+        Enables setting of the nodes in R.
+        """
+        if layer_type == "encoding":
+            self.encoding_config['layers'][layer_num]["num_nodes"] = num_nodes
+        elif layer_type == "decoding":
+            self.decoding_config['layers'][layer_num]["num_nodes"] = num_nodes
+        else:
+            self.u.warn_p(['Layer passed was not "encoding" or "decoding" passed: ', layer_type])
+
     def get_reconstruction_loss(self):
         """
         Return the loss of the VAE.
@@ -552,7 +561,7 @@ class VAE(object):
         # For older version of Keras and TF
         # with open(optimizer_file_path, 'wb') as f:
         #     pickle.dump(self.vae.optimizer.get_config(), f)
-        # for new versions
+        # for new versions: https://github.com/NREL/phygnn/issues/16
         with open(optimizer_file_path, 'w+') as f:
             config_optimiser = self.vae.optimizer.get_config()
             for c in config_optimiser:
@@ -583,7 +592,7 @@ class VAE(object):
             with open(f'input_{data_filename}', 'rb') as f:
                 self.input_data_np = pickle.load(f)
             with open(f'output_{data_filename}', 'rb') as f:
-                self.output_data_np = pickle.load(self.output_data_np)
+                self.output_data_np = pickle.load(f)
         # Build the model
         self.build_model()
         # Load weights
@@ -592,7 +601,7 @@ class VAE(object):
         # Again below is for old versions
         # with open(optimizer_file_path, 'rb') as f:
         #     self.compile(pickle.load(f))
-        # For new versions:
+        # For new versions: https://github.com/NREL/phygnn/issues/16
         with open(optimizer_file_path, 'r+') as f:
             optimiser_config = json.load(f)
             self.compile(optimizer_config=optimiser_config)

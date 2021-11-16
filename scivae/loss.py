@@ -138,7 +138,7 @@ class Loss:
             self.u.err_p([msg])
             raise LossException(msg)
         # Return the mean between the reconstruction loss and the learning rate * the distance between the distributions
-        return K.mean(reconstruction_loss + self.mmd_weight * distance)
+        return K.mean(reconstruction_loss + (self.mmd_weight * distance))
 
     @staticmethod
     def get_binary_crossentropy_loss(input_x, output_y):
