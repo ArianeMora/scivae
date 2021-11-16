@@ -27,7 +27,10 @@ Validate allows for running simple validations using scikitlearn i.e. if your pr
 
 ## Users
 
-Check out the install page and the documentation!
+Check out the install page and the documentation or our package on pip: https://pypi.org/project/scivae/1.0.4/ 
+```
+pip install scivae
+```
 
 ## Developers
 Install required packages
@@ -86,34 +89,6 @@ plt.scatter(encoded_data_vae_mse[:,0], encoded_data_vae_mse[:,1])
 
 ## Tests
 See tests for further examples.
-
-## Creating a package for scivae
-
-If you don't already have twine installed run the following:
-`python -m pip install --user --upgrade twine`
-
-## The following will create the package
-```
-python setup.py sdist bdist_wheel
-twine check dist/PROJECT_NAME.tar.gz
-```
-
-## Install to python environment localling
-
-`pip install PATH_TO_PROJECT/dist/PROJECT_NAME.tar.gz`
-You should run this before uploading it and check all works as expected.
-
-## The following will push the package to pip 
-**Note you need to set up a pip account first**
-
-```
-twine upload dist/*
-```
-
-## Have a look at your projects page on pip
-
-`https://pypi.org/project/PROJECT_NAME/`
-
 
 ## References
         https://github.com/pren1/keras-MMD-Variational-Autoencoder/blob/master/Keras_MMD_Variational_Autoencoder.ipynb
