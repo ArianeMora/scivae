@@ -39,7 +39,7 @@ class Loss:
     """
 
     def __init__(self, loss_type: str, distance_metric: str, mmd_weight: float, multi_loss=None, sciutil=None,
-                 mmcd_method='k',  beta=1.0):
+                 mmcd_method='k',  beta=1.0, input_size=None):
         """
 
         Parameters
@@ -79,6 +79,12 @@ class Loss:
         self.distance_metric = distance_metric
         self.beta = beta or 1.0
         self.mmcd_method = mmcd_method
+        self.sizes = input_size
+        if isinstance(input_size, list):
+            total = 0
+            for s in input_size:
+                total += s
+            self.sizes = [s/total for s in input_size]
 
     def get_loss(self, inputs_x, outputs_y, latent_z, latent_z_mean, latent_z_log_sigma) -> float:
         """
@@ -124,11 +130,12 @@ class Loss:
                     reconstruction_loss += self.get_binary_crossentropy_loss(inputs_x[loss_idx],
                                                                              outputs_y[loss_idx])
                 elif loss_method == 'mse':
+                    # normalise to the number of features
                     reconstruction_loss += self.get_mean_squared_error_loss(inputs_x[loss_idx],
-                                                                            outputs_y[loss_idx])
+                                                                            outputs_y[loss_idx])*self.sizes[loss_idx]
                 elif loss_method == 'cor':
                     reconstruction_loss += self.get_correlation_loss(inputs_x[loss_idx],
-                                                                     outputs_y[loss_idx])
+                                                                     outputs_y[loss_idx])*self.sizes[loss_idx]
                 elif loss_method == 'mae':
                     reconstruction_loss += self.get_mean_absolute_error_loss(inputs_x[loss_idx],
                                                                              outputs_y[loss_idx])
