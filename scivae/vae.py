@@ -28,13 +28,14 @@ import pickle
 from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.callbacks import TensorBoard
 import json
-from sciutil import SciException, SciUtil
 from scivae import Loss
+from sciutil import SciException, SciUtil
 
 
 class VAEException(SciException):
     def __init__(self, message=''):
         Exception.__init__(self, message)
+c = "#69d"
 
 
 class VAE(object):
@@ -89,7 +90,7 @@ class VAE(object):
         self.model_type = None
         self.loss = Loss(config['loss']['loss_type'], config['loss']['distance_metric'],
                          config['loss']['mmd_weight'], config['loss'].get('multi_loss'),
-                         beta=config['loss'].get('beta'), mmcd_method=config['loss'].get('mmcd_method'))
+                         beta=config['loss'].get('beta'), mmcd_method=config['loss'].get('mmcd_method'), input_size=config['input_size'])
         self.encoding_config = config['encoding']
         self.decoding_config = config['decoding']
         self.latent_config = config['latent']
@@ -289,24 +290,18 @@ class VAE(object):
         self.build_embedding()
 
         # Initialise the encoder
-        # if self.loss.distance_metric == 'mmd':
-        #     self.encoder = Model(self.inputs_x, self.latent_z,
-        #                          name='encoder')
-        # else:
         self.encoder = Model(self.inputs_x, [self.latent_z_mean, self.latent_z_log_sigma, self.latent_z], name='encoder')
-        self.encoder.summary()
+        self.u.dp(["Encoder summary:"])
+        print(self.encoder.summary())
 
         # Build the decoder network
         # ------------ Dense out -----------------
         self.decoding = self.build_decoder()
         self.decoder = Model(self.latent_inputs, self.decoding, name='decoder')
-        self.decoder.summary()
+        self.u.dp(["Decoder summary:"])
+        print(self.decoder.summary())
 
         # ------------ Out -----------------------
-        # if self.loss.distance_metric == 'mmd':
-        #     self.outputs_y = self.decoder(self.encoder(self.inputs_x))
-        # else:
-
         self.outputs_y = self.decoder(self.encoder(self.inputs_x)[2])
         self.vae = Model(self.inputs_x, self.outputs_y, name='VAE_' + self.vae_label + '_scivae')
         self.vae.add_loss(self.loss.get_loss(self.inputs_x, self.outputs_y, self.latent_z, self.latent_z_mean,
@@ -318,7 +313,7 @@ class VAE(object):
             # Reinitialise
             optimizer.from_config(optimizer_config)
         self.vae.compile(optimizer=optimizer)
-        print(self.vae.summary())
+
 
     def encode(self, method='default', epochs=50, batch_size=50, train_percent=85.0, logging_dir=None, logfile=None):
         """
@@ -477,7 +472,7 @@ class VAE(object):
         raise VAEException(msg)
 
     def set_nodes(self, layer_num: int, num_nodes: int, layer_type: str):
-        """ 
+        """
         Enables setting of the nodes in R.
         """
         if layer_type == "encoding":
