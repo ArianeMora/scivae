@@ -31,6 +31,7 @@ from scipy import stats
 from statsmodels.stats.multitest import multipletests
 import pandas as pd
 import json
+import numpy as np
 
 
 class VAEStats:
@@ -79,11 +80,12 @@ class VAEStats:
             # Need to think about this
             column_dict = dict(zip(case_sample_df.column_label, case_sample_df.column_id))
             # Now iterate through each of the columns and add those to the DF
-            case_cond_df = pd.DataFrame(columns=self.feature_columns)
+            case_cond_df = pd.DataFrame()
+            case_cond_df['id'] = list(self.df.index.values)
             for col in self.feature_columns:
                 case_cond_df[col] = self.df[column_dict[col]].values # Get the column name from the case
             # Add this to the cond_1_sample_df
-            cond_1_encodings[case] = self.vae.encode(case_cond_df.values)
+            cond_1_encodings[case] = self.vae.encode_new_data(case_cond_df[self.feature_columns].values)
 
         # Encode this value
         cond_0_sample_df = self.sample_df[self.sample_df['condition_id'] == 0]
@@ -92,27 +94,141 @@ class VAEStats:
             case_sample_df = cond_0_sample_df[cond_0_sample_df['case_id'] == case]
             # Need to think about this
             column_dict = dict(zip(case_sample_df.column_label, case_sample_df.column_id))
-            case_cond_df = pd.DataFrame(columns=self.feature_columns)
+            # Now iterate through each of the columns and add those to the DF
+            case_cond_df = pd.DataFrame()
+            case_cond_df['id'] = list(self.df.index.values)
             for col in self.feature_columns:
-                case_cond_df[col] = self.df[column_dict[col]].values # Get the column name from the case
-            cond_0_encodings[case] = self.vae.encode(case_cond_df.values)
+                case_cond_df[col] = self.df[column_dict[col]].values  # Get the column name from the case
+            # Add this to the cond_1_sample_df
+            cond_0_encodings[case] = self.vae.encode_new_data(case_cond_df[self.feature_columns].values)
 
         # Now we want to perform the differential test on the data between cond 1 - cond 0
         # If we have multiple samples we need to do this for each one
-        if len(cond_0_encodings[0]) > 0:
+        if len(id_vals) > 0:
             stat_vals = []
             p_vals = []
+            means_difference = []
+            base_means_cond_0 = []
+            base_means_cond_1 = []
             # For each case in the encodings we want to collect the values
-            for i in range(0, len(cond_0_encodings[0])):
-                cases_0_vals = [c[i] for c in cond_0_encodings.values()]
-                cases_1_vals = [c[i] for c in cond_1_encodings.values()]
+            for i in range(0, len(id_vals)):
+                cases_0_vals = [c[i][0] for c in cond_0_encodings.values()]
+                cases_1_vals = [c[i][0] for c in cond_1_encodings.values()]
                 # potentially wrap a try catch if there are all even numbers
                 t_stat, p_val = stats.mannwhitneyu(cases_1_vals, cases_0_vals)
                 stat_vals.append(t_stat)
                 p_vals.append(p_val)
+                base_mean_cond_1 = np.mean(cases_1_vals)
+                base_mean_cond_0 = np.mean(cases_0_vals)
+                means_difference.append(base_mean_cond_1 - base_mean_cond_0)
+                base_means_cond_0.append(base_mean_cond_0)
+                base_means_cond_1.append(base_mean_cond_1)
             # Now we have the p-values we can perform the correction
-            corrected_p_vals = multipletests(p_vals, method='fdr_bh')
-            return pd.DataFrame(columns=['id', 'stat', 'padj'], data=[id_vals, stat_vals, corrected_p_vals])
+            reg, corrected_p_vals, a, b = multipletests(p_vals, method='fdr_bh', alpha=0.2, returnsorted=False)
+            # Return something similar to what you'd get from DEseq2
+            stats_df = pd.DataFrame()
+            stats_df['id'] = id_vals
+            stats_df['stat'] = stat_vals
+            stats_df['padj'] = corrected_p_vals
+            stats_df['pval'] = p_vals
+            stats_df['diff'] = means_difference
+            stats_df['base_mean_cond_0'] = base_means_cond_0
+            stats_df['base_mean_cond_1'] = base_means_cond_1
+            return stats_df
+        else:
+            # Only one value so just do the test once.
+            cases_0_vals = [c for c in cond_0_encodings.values()]
+            cases_1_vals = [c for c in cond_1_encodings.values()]
+            t_stat, p_val = stats.mannwhitneyu(cases_1_vals, cases_0_vals)
+            return t_stat, p_val
+
+    def peform_DVAE_multiloss(self, test_type: str = "t-test"):
+        # For each of the conditions we want to encode each of the points then perform a stats test between the two
+        # conditions.
+        # Get all the rows associated with this condition
+        # There are three levels of information 1) condition, 2) feature, 3) case_id
+        # Each case ID presents a unique training data point
+        cond_1_sample_df = self.sample_df[self.sample_df['condition_id'] == 1]
+        id_vals = self.df.index.values
+        cond_1_encodings = {}
+        for case in cond_1_sample_df['case_id'].unique():
+            case_sample_df = cond_1_sample_df[cond_1_sample_df['case_id'] == case]
+            # Need to think about this
+            column_dict = dict(zip(case_sample_df.column_label, case_sample_df.column_id))
+            # Now iterate through each of the columns and add those to the DF
+            case_cond_df = pd.DataFrame()
+            case_cond_df['id'] = list(self.df.index.values)
+
+            for col in self.feature_columns:
+                case_cond_df[col] = self.df[column_dict[col]].values  # Get the column name from the case
+            # Add this to the cond_1_sample_df
+            multi_loss = []
+            # Need to put the columns in the correct multiloss order
+            case_sample_df.sort_values(by=['multi_loss'], inplace=True)
+            for c in case_sample_df['multi_loss'].unique():
+                ml_col = case_sample_df[case_sample_df['multi_loss'] == c]
+                cols = [c for c in self.feature_columns if c in list(ml_col.column_label.values)]
+                multi_loss.append(case_cond_df[cols].values)
+            # Encode using multiloss
+            cond_1_encodings[case] = self.vae.encode_new_data(multi_loss, scale=False)
+
+        # Encode this value
+        cond_0_sample_df = self.sample_df[self.sample_df['condition_id'] == 0]
+        cond_0_encodings = {}
+        for case in cond_0_sample_df['case_id'].unique():
+            case_sample_df = cond_0_sample_df[cond_0_sample_df['case_id'] == case]
+            # Need to think about this
+            column_dict = dict(zip(case_sample_df.column_label, case_sample_df.column_id))
+            # Now iterate through each of the columns and add those to the DF
+            case_cond_df = pd.DataFrame()
+            case_cond_df['id'] = list(self.df.index.values)
+
+            for col in self.feature_columns:
+                case_cond_df[col] = self.df[column_dict[col]].values  # Get the column name from the case
+            # Add this to the cond_1_sample_df
+            multi_loss = []
+            # Need to put the columns in the correct multiloss order
+            case_sample_df.sort_values(by=['multi_loss'], inplace=True)
+            for c in case_sample_df['multi_loss'].unique():
+                ml_col = case_sample_df[case_sample_df['multi_loss'] == c]
+                cols = [c for c in self.feature_columns if c in list(ml_col.column_label.values)]
+                multi_loss.append(case_cond_df[cols].values)
+            # Encode using multiloss
+            cond_0_encodings[case] = self.vae.encode_new_data(multi_loss, scale=False)
+
+        # Now we want to perform the differential test on the data between cond 1 - cond 0
+        # If we have multiple samples we need to do this for each one
+        if len(id_vals) > 0:
+            stat_vals = []
+            p_vals = []
+            means_difference = []
+            base_means_cond_0 = []
+            base_means_cond_1 = []
+            # For each case in the encodings we want to collect the values
+            for i in range(0, len(id_vals)):
+                cases_0_vals = [c[i][0] for c in cond_0_encodings.values()]
+                cases_1_vals = [c[i][0] for c in cond_1_encodings.values()]
+                # potentially wrap a try catch if there are all even numbers
+                t_stat, p_val = stats.mannwhitneyu(cases_1_vals, cases_0_vals)
+                stat_vals.append(t_stat)
+                p_vals.append(p_val)
+                base_mean_cond_1 = np.mean(cases_1_vals)
+                base_mean_cond_0 = np.mean(cases_0_vals)
+                means_difference.append(base_mean_cond_1 - base_mean_cond_0)
+                base_means_cond_0.append(base_mean_cond_0)
+                base_means_cond_1.append(base_mean_cond_1)
+            # Now we have the p-values we can perform the correction
+            reg, corrected_p_vals, a, b = multipletests(p_vals, method='fdr_bh', alpha=0.2, returnsorted=False)
+            # Return something similar to what you'd get from DEseq2
+            stats_df = pd.DataFrame()
+            stats_df['id'] = id_vals
+            stats_df['stat'] = stat_vals
+            stats_df['padj'] = corrected_p_vals
+            stats_df['pval'] = p_vals
+            stats_df['diff'] = means_difference
+            stats_df['base_mean_cond_0'] = base_means_cond_0
+            stats_df['base_mean_cond_1'] = base_means_cond_1
+            return stats_df
         else:
             # Only one value so just do the test once.
             cases_0_vals = [c for c in cond_0_encodings.values()]

@@ -29,3 +29,4 @@ from scivae.vae import VAEException
 from scivae.optimiser import Optimiser
 from scivae.validate import Validate
 from scivae.vis import Vis
+from scivae.stats import VAEStats

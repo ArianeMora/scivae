@@ -100,7 +100,7 @@ class VAE(object):
                 return
         self.sample_method = config.get('sample_method') if config.get('sample_method') else "normal"  # Or negbinom
         self.seed = config.get('seed') if config.get('seed') else 17
-        scale_data = config.get('scale_data') if config.get('scale_data') else True
+        scale_data = config.get('scale_data') if config.get('scale_data') else False
         self.batch_norm = True if config.get('batch_norm') else False
         if scale_data and self.input_data_np is not None:
             self.scale_data()
