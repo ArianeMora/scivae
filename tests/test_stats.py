@@ -32,17 +32,18 @@ class TestVAE(unittest.TestCase):
         self.local = True
         THIS_DIR = os.path.dirname(os.path.abspath(__file__))
         self.data_dir = os.path.join(THIS_DIR, 'data/')
-
-        if self.local:
-            self.tmp_dir = os.path.join(THIS_DIR, 'data/tmp/')
-            if os.path.exists(self.tmp_dir):
-                shutil.rmtree(self.tmp_dir)
-            os.mkdir(self.tmp_dir)
-        else:
-            self.tmp_dir = tempfile.mkdtemp(prefix='EXAMPLE_PROJECT_tmp_')
+        #
+        # if self.local:
+        #     self.tmp_dir = os.path.join(THIS_DIR, 'data/tmp/')
+        #     if os.path.exists(self.tmp_dir):
+        #         shutil.rmtree(self.tmp_dir)
+        #     os.mkdir(self.tmp_dir)
+        # else:
+        #     self.tmp_dir = tempfile.mkdtemp(prefix='EXAMPLE_PROJECT_tmp_')
 
     def tearDown(self):
-        shutil.rmtree(self.tmp_dir)
+        #shutil.rmtree(self.tmp_dir)
+        print("Done")
 
     def test_train(self):
         data_dir = '../data/'
@@ -150,7 +151,7 @@ class TestVAE(unittest.TestCase):
                                    'Protein-Normal': 1,
                                    'Protein-Tumor': 1}
         train_df = pd.read_csv(f'{data_dir}/MDS_train_data.csv')
-        case_sample_df = pd.read_csv(f'{data_dir}/MDS_sample_matched.csv')
+        case_sample_df = pd.read_csv(f'{data_dir}/MDS_sample.csv')
         case_sample_df = case_sample_df[case_sample_df['column_label'].isin(feature_columns)]
         # Need to update with mutliloss position
         multi_loss = []
@@ -175,11 +176,9 @@ class TestVAE(unittest.TestCase):
                    config_json=config_json)  # save the VAE
         vae_m.u.dp(["Saved VAE to current directory."])
 
-
     def test_stats_multiloss(self):
         data_dir = '../data/'
         df = pd.read_csv(f'{data_dir}/MDS_data.csv', index_col=0)
-        sample_df = pd.read_csv(f'{data_dir}/MDS_sample_matched_multiloss.csv')
         weight_file_path = f'{data_dir}TvN_model_weights_VAE_MDS_multiloss.h5'
         optimizer_file_path = f'{data_dir}TvN_model_optimiser_VAE_MDS_multiloss.json'
         config_json = f'{data_dir}TvN_model_config_VAE_MDS_multiloss.json'
@@ -190,6 +189,15 @@ class TestVAE(unittest.TestCase):
                            'RNA-Tumor',
                            'Protein-Normal',
                            'Protein-Tumor']
+        sample_df = pd.read_csv(f'{data_dir}/MDS_sample_matched_multiloss.csv')
+        matched_cases = []
+        for case in sample_df['case_id'].unique():
+            case_sample_df = sample_df[sample_df['case_id'] == case]
+            if len(case_sample_df) == 7:
+                matched_cases.append(case)
+            else:
+                print(case)
+        sample_df = sample_df[sample_df['case_id'].isin(matched_cases)]
         vs = VAEStats(df, sample_df, weight_file_path=weight_file_path,
                       optimizer_file_path=optimizer_file_path, config_json=config_json,
                       feature_columns=feature_columns,
