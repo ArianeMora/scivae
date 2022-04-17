@@ -32,6 +32,7 @@ from statsmodels.stats.multitest import multipletests
 import pandas as pd
 import json
 import numpy as np
+from sciutil import SciUtil
 
 
 class VAEStats:
@@ -57,6 +58,7 @@ class VAEStats:
         self.vae = VAE(df.values, df.values, ["None"] * len(df), self.config, vae_name)
         # Load pre-saved VAE
         self.vae.load(weight_file_path, optimizer_file_path, config_json)
+        self.u = SciUtil()
 
     def test_for_normality(self, values, test_type: str = "shapiro"):
         """ Perform a test for normality."""
@@ -132,7 +134,8 @@ class VAEStats:
         return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=False)
 
     def peform_DVAE_multiloss(self, multi_loss_columns: list, test_type: str = None, column_to_align_to: str = None):
-        return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=True, multi_loss_columns=multi_loss_columns)
+        return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=True,
+                             multi_loss_columns=multi_loss_columns)
 
     def make_stats_df(self, test_type, id_vals, cond_1_encodings, cond_0_encodings, column_to_align_to,
                       alignment_column_1_values, alignment_column_0_values):
@@ -143,16 +146,23 @@ class VAEStats:
             p_vals = []
             base_means_cond_0 = []
             base_means_cond_1 = []
+            num_cond_0 = 0
+            num_cond_1 = 0
+
             # For each case in the encodings we want to collect the values
             for i in range(0, len(id_vals)):
                 # ToDo: extend to anova or other statistical tests for more data types.
                 cases_0_vals = [c[i][0] for c in cond_0_encodings.values()]
                 cases_1_vals = [c[i][0] for c in cond_1_encodings.values()]
+                num_cond_0 = len(cases_0_vals)
+                num_cond_1 = len(cases_1_vals)
                 # potentially wrap a try catch if there are all even numbers
                 if test_type == 't-test':
                     t_stat, p_val = stats.ttest_ind(cases_1_vals, cases_0_vals)
                 else:
                     t_stat, p_val = stats.mannwhitneyu(cases_1_vals, cases_0_vals)
+                if p_val == 0 or p_val > 1:
+                    p_val = 1.0
                 stat_vals.append(t_stat)
                 p_vals.append(p_val)
                 base_mean_cond_1 = np.mean(cases_1_vals)
@@ -160,7 +170,7 @@ class VAEStats:
                 base_means_cond_0.append(base_mean_cond_0)
                 base_means_cond_1.append(base_mean_cond_1)
             # Now we have the p-values we can perform the correction
-            reg, corrected_p_vals, a, b = multipletests(p_vals, method='fdr_bh', alpha=0.2, returnsorted=False)
+            reg, corrected_p_vals, a, b = multipletests(p_vals, method='fdr_bh', alpha=0.05, returnsorted=False)
             # Return something similar to what you'd get from DEseq2
             stats_df = pd.DataFrame()
             stats_df['id'] = id_vals
@@ -186,6 +196,8 @@ class VAEStats:
             stats_df['diff'] = base_means_cond_1 - base_means_cond_0
             stats_df['base_mean_cond_0'] = base_means_cond_0
             stats_df['base_mean_cond_1'] = base_means_cond_1
+            self.u.dp(['Summary\n', f'Cond1: {num_cond_1} vs Cond0: {num_cond_0}\n',
+                       stats_df.describe()])
             return stats_df
         else:
             # Only one value so just do the test once.
