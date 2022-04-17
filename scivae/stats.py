@@ -66,7 +66,7 @@ class VAEStats:
             return False
         return True
 
-    def run_DVAE(self, test_type, multi_loss, column_to_align_to):
+    def run_DVAE(self, test_type, multi_loss, column_to_align_to, multi_loss_columns: list = None):
         # For each of the conditions we want to encode each of the points then perform a stats test between the two
         # conditions.
         # Get all the rows associated with this condition
@@ -92,10 +92,7 @@ class VAEStats:
             if multi_loss:
                 data = []
                 # Need to put the columns in the correct multiloss order
-                case_sample_df.sort_values(by=['multi_loss'], inplace=True)
-                for c in case_sample_df['multi_loss'].unique():
-                    ml_col = case_sample_df[case_sample_df['multi_loss'] == c]
-                    cols = [c for c in self.feature_columns if c in list(ml_col.column_label.values)]
+                for cols in multi_loss_columns:
                     data.append(case_cond_df[cols].values)
             else:
                 data = case_cond_df[self.feature_columns].values
@@ -122,10 +119,7 @@ class VAEStats:
             if multi_loss:
                 data = []
                 # Need to put the columns in the correct multiloss order
-                case_sample_df.sort_values(by=['multi_loss'], inplace=True)
-                for c in case_sample_df['multi_loss'].unique():
-                    ml_col = case_sample_df[case_sample_df['multi_loss'] == c]
-                    cols = [c for c in self.feature_columns if c in list(ml_col.column_label.values)]
+                for cols in multi_loss_columns:
                     data.append(case_cond_df[cols].values)
             else:
                 data = case_cond_df[self.feature_columns].values
@@ -134,11 +128,11 @@ class VAEStats:
         return self.make_stats_df(test_type, id_vals, cond_1_encodings, cond_0_encodings, column_to_align_to,
                                   alignment_column_1_values, alignment_column_0_values)
 
-    def peform_DVAE(self, test_type: str = "t-test", column_to_align_to: str = None):
+    def peform_DVAE(self, test_type: str = None, column_to_align_to: str = None):
         return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=False)
 
-    def peform_DVAE_multiloss(self, test_type: str = "t-test", column_to_align_to: str = None):
-        return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=True)
+    def peform_DVAE_multiloss(self, multi_loss_columns: list, test_type: str = None, column_to_align_to: str = None):
+        return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=True, multi_loss_columns=multi_loss_columns)
 
     def make_stats_df(self, test_type, id_vals, cond_1_encodings, cond_0_encodings, column_to_align_to,
                       alignment_column_1_values, alignment_column_0_values):
