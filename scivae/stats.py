@@ -122,7 +122,6 @@ class VAEStats:
             if multi_loss:
                 data = []
                 # Need to put the columns in the correct multiloss order
-                # Need to put the columns in the correct multiloss order
                 case_sample_df.sort_values(by=['multi_loss'], inplace=True)
                 for c in case_sample_df['multi_loss'].unique():
                     ml_col = case_sample_df[case_sample_df['multi_loss'] == c]
@@ -132,7 +131,7 @@ class VAEStats:
                 data = case_cond_df[self.feature_columns].values
             # Encode using multiloss
             cond_0_encodings[case] = self.vae.encode_new_data(data, scale=False)
-        return self.make_stats_df(id_vals, cond_1_encodings, cond_0_encodings, column_to_align_to,
+        return self.make_stats_df(test_type, id_vals, cond_1_encodings, cond_0_encodings, column_to_align_to,
                                   alignment_column_1_values, alignment_column_0_values)
 
     def peform_DVAE(self, test_type: str = "t-test", column_to_align_to: str = None):
@@ -141,7 +140,8 @@ class VAEStats:
     def peform_DVAE_multiloss(self, test_type: str = "t-test", column_to_align_to: str = None):
         return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=True)
 
-    def make_stats_df(self, id_vals, cond_1_encodings, cond_0_encodings, column_to_align_to, alignment_column_1_values, alignment_column_0_values):
+    def make_stats_df(self, test_type, id_vals, cond_1_encodings, cond_0_encodings, column_to_align_to,
+                      alignment_column_1_values, alignment_column_0_values):
         # Now we want to perform the differential test on the data between cond 1 - cond 0
         # If we have multiple samples we need to do this for each one
         if len(id_vals) > 0:
@@ -151,10 +151,14 @@ class VAEStats:
             base_means_cond_1 = []
             # For each case in the encodings we want to collect the values
             for i in range(0, len(id_vals)):
+                # ToDo: extend to anova or other statistical tests for more data types.
                 cases_0_vals = [c[i][0] for c in cond_0_encodings.values()]
                 cases_1_vals = [c[i][0] for c in cond_1_encodings.values()]
                 # potentially wrap a try catch if there are all even numbers
-                t_stat, p_val = stats.mannwhitneyu(cases_1_vals, cases_0_vals)
+                if test_type == 't-test':
+                    t_stat, p_val = stats.ttest_ind(cases_1_vals, cases_0_vals)
+                else:
+                    t_stat, p_val = stats.mannwhitneyu(cases_1_vals, cases_0_vals)
                 stat_vals.append(t_stat)
                 p_vals.append(p_val)
                 base_mean_cond_1 = np.mean(cases_1_vals)
@@ -170,18 +174,20 @@ class VAEStats:
             stats_df['padj'] = corrected_p_vals
             stats_df['pval'] = p_vals
             # Check if we have a column to align to
+            base_means_cond_1 = np.array(base_means_cond_1)
+            base_means_cond_0 = np.array(base_means_cond_0)
             if column_to_align_to is not None:
                 mean_col_0 = np.mean(np.array(alignment_column_0_values), axis=1)
                 mean_col_1 = np.mean(np.array(alignment_column_1_values), axis=1)
-                col_0_corr = np.corrcoef(mean_col_0, np.array(base_means_cond_0))[0, 1]
-                col_1_corr = np.corrcoef(mean_col_1, np.array(base_means_cond_1))[0, 1]
+                col_0_corr = np.corrcoef(mean_col_0, base_means_cond_0)[0, 1]
+                col_1_corr = np.corrcoef(mean_col_1, base_means_cond_1)[0, 1]
                 if abs(col_0_corr) > abs(col_1_corr):
                     direction = -1 if col_0_corr < 0 else 1
                 else:
                     direction = -1 if col_1_corr < 0 else 1
                 # Convert both
-                base_means_cond_0 = direction * np.array(base_means_cond_0)
-                base_means_cond_1 = direction * np.array(base_means_cond_1)
+                base_means_cond_0 = direction * base_means_cond_0
+                base_means_cond_1 = direction * base_means_cond_1
 
             stats_df['diff'] = base_means_cond_1 - base_means_cond_0
             stats_df['base_mean_cond_0'] = base_means_cond_0

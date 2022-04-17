@@ -16,16 +16,13 @@
 ###############################################################################
 
 import os
-import shutil
-import tempfile
 import unittest
 import pandas as pd
 
-from scivae import Optimiser, VAE, Validate, VAEStats
-from sciviso import Scatterplot
+from scivae import VAE, VAEStats
 
 
-class TestVAE(unittest.TestCase):
+class TestVAEStats(unittest.TestCase):
 
     def setUp(self):
         # Flag to set data to be local so we don't have to download them repeatedly. ToDo: Remove when publishing.

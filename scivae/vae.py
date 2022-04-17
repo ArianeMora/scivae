@@ -30,7 +30,8 @@ from tensorflow.keras.callbacks import TensorBoard
 import json
 from scivae import Loss
 from sciutil import SciException, SciUtil
-
+import random
+import string
 
 class VAEException(SciException):
     def __init__(self, message=''):
@@ -50,11 +51,14 @@ class VAE(object):
         https://github.com/tensorflow/tensorflow/issues/41053 for saving
     """
 
-    def __init__(self, input_data_np: np.array, output_data_np: np.array, labels: list, config, vae_label='',
+    def __init__(self, input_data_np: np.array, output_data_np: np.array, labels: list, config, vae_label=None,
                  sciutil=None, config_as_str=False, empty=False):
         self.u = sciutil if sciutil is not None else SciUtil()
         # Setting the other internal variables
         # Check if the config is a string object
+        if vae_label is None:
+            rand_label = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+            vae_label = f'VAE_{rand_label}'
         if config_as_str:
             with open(config, "r") as fp:
                 config = json.load(fp)  # load from the FP
@@ -340,16 +344,22 @@ class VAE(object):
             msg = self.u.msg.msg_arg_err("encode", "method", method, ['default', 'optimise'])
             self.u.err_p([msg])
             raise VAEException(msg)
-
-        csv_logger = CSVLogger(logfile, append=True, separator=',')
-        # Otherwise fit the VAE with the training and test data
-        self.vae.fit(self.training_input_np,
-                     epochs=epochs,
-                     batch_size=batch_size,
-                     shuffle=True,
-                     validation_data=(self.test_input_np, None),
-                     callbacks=[TensorBoard(log_dir=logging_dir), csv_logger]
-        )
+        if logging_dir:
+            csv_logger = CSVLogger(logfile, append=True, separator=',')
+            self.vae.fit(self.training_input_np,
+                         epochs=epochs,
+                         batch_size=batch_size,
+                         shuffle=True,
+                         validation_data=(self.test_input_np, None),
+                         callbacks=[TensorBoard(log_dir=logging_dir), csv_logger]
+            )
+        else:
+            self.vae.fit(self.training_input_np,
+                         epochs=epochs,
+                         batch_size=batch_size,
+                         shuffle=True,
+                         validation_data=(self.test_input_np, None)
+                         )
 
     def _encode_default(self):
         """
