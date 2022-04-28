@@ -347,7 +347,7 @@ class TestVAE(unittest.TestCase):
         df = pd.read_csv(data)
         value_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         vae = VAE(df[value_cols].values, df[value_cols].values, df['label'].values, config, 'vae')
-        vae.encode('default', logging_dir=self.tmp_dir)
+        vae.encode('default', epochs=10000, logging_dir=self.tmp_dir, early_stop=True)
 
         # Lets have a look at a scatterplot version & apply the class colours to our plot
         encoding = vae.get_encoded_data()
@@ -358,12 +358,12 @@ class TestVAE(unittest.TestCase):
         lut = dict(zip(set(labels), sns.color_palette("coolwarm", len(set(labels)))))
         row_colors2 = pd.DataFrame(labels)[0].map(lut)
         vis_df['label'] = row_colors2
-        scatter = Scatterplot(vis_df, 'latent_0', 'latent_1', colour=row_colors2, title='VAE', xlabel='latent')
-        scatter.plot()
-        plt.show()
-        vd = Validate(vae, labels)
-        print(vd.predict('rf', 'balanced_accuracy'))
-        print(vd.predict('svm', 'balanced_accuracy'))
+        # scatter = Scatterplot(vis_df, 'latent_0', 'latent_1', colour=row_colors2, title='VAE', xlabel='latent')
+        # scatter.plot()
+        # plt.show()
+        # vd = Validate(vae, labels)
+        # print(vd.predict('rf', 'balanced_accuracy'))
+        # print(vd.predict('svm', 'balanced_accuracy'))
 
     def test_auto_optimise(self):
         """

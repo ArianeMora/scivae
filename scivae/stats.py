@@ -68,12 +68,14 @@ class VAEStats:
             return False
         return True
 
-    def run_DVAE(self, test_type, multi_loss, column_to_align_to, multi_loss_columns: list = None):
+    def run_DVAE(self, test_type, multi_loss, column_to_align_to = None, multi_loss_columns: list = None):
         # For each of the conditions we want to encode each of the points then perform a stats test between the two
         # conditions.
         # Get all the rows associated with this condition
         # There are three levels of information 1) condition, 2) feature, 3) case_id
         # Each case ID presents a unique training data point
+        if not column_to_align_to:
+            column_to_align_to = []
         cond_1_sample_df = self.sample_df[self.sample_df['condition_id'] == 1]
         id_vals = self.df.index.values
         cond_1_encodings = {}
@@ -88,8 +90,9 @@ class VAEStats:
 
             for col in self.feature_columns:
                 case_cond_df[col] = self.df[column_dict[col]].values  # Get the column name from the case
-                if col == column_to_align_to:  # If we have a column to align to we want to add in these values
-                    alignment_column_1_values.append(case_cond_df[col].values)
+            # Align to columns in the order presented
+            for col in column_to_align_to:
+                alignment_column_1_values.append(case_cond_df[col].values)
             # Add this to the cond_1_sample_df
             if multi_loss:
                 data = []
@@ -115,8 +118,9 @@ class VAEStats:
 
             for col in self.feature_columns:
                 case_cond_df[col] = self.df[column_dict[col]].values  # Get the column name from the case
-                if col == column_to_align_to:  # If we have a column to align to we want to add in these values
-                    alignment_column_0_values.append(case_cond_df[col].values)
+            # Align to columns in the order presented
+            for col in column_to_align_to:
+                alignment_column_1_values.append(case_cond_df[col].values)
             # Add this to the cond_1_sample_df
             if multi_loss:
                 data = []
@@ -130,10 +134,10 @@ class VAEStats:
         return self.make_stats_df(test_type, id_vals, cond_1_encodings, cond_0_encodings, column_to_align_to,
                                   alignment_column_1_values, alignment_column_0_values)
 
-    def peform_DVAE(self, test_type: str = None, column_to_align_to: str = None):
+    def peform_DVAE(self, test_type: str = None, column_to_align_to: list = None):
         return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=False)
 
-    def peform_DVAE_multiloss(self, multi_loss_columns: list, test_type: str = None, column_to_align_to: str = None):
+    def peform_DVAE_multiloss(self, multi_loss_columns: list, test_type: str = None, column_to_align_to: list = None):
         return self.run_DVAE(test_type=test_type, column_to_align_to=column_to_align_to, multi_loss=True,
                              multi_loss_columns=multi_loss_columns)
 
@@ -181,19 +185,29 @@ class VAEStats:
             base_means_cond_1 = np.array(base_means_cond_1)
             base_means_cond_0 = np.array(base_means_cond_0)
             if column_to_align_to is not None:
-                mean_col_0 = np.mean(np.array(alignment_column_0_values), axis=1)
-                mean_col_1 = np.mean(np.array(alignment_column_1_values), axis=1)
-                col_0_corr = np.corrcoef(mean_col_0, base_means_cond_0)[0, 1]
-                col_1_corr = np.corrcoef(mean_col_1, base_means_cond_1)[0, 1]
-                if abs(col_0_corr) > abs(col_1_corr):
-                    direction = -1 if col_0_corr < 0 else 1
+                # Go through each one and stop if we get over 0.5 correlation
+                for col_i in range(0, len(alignment_column_0_values)):
+                    mean_col_0 = np.mean(np.array(alignment_column_0_values[col_i]), axis=0)  # Across genes
+                    mean_col_1 = np.mean(np.array(alignment_column_1_values[col_i]), axis=0)
+                    col_0_corr = np.corrcoef(mean_col_0, base_means_cond_0)[0, 1]
+                    col_1_corr = np.corrcoef(mean_col_1, base_means_cond_1)[0, 1]
+                    if abs(col_0_corr) > 0.5 or abs(col_1_corr) > 0.5:
+                        if abs(col_0_corr) > abs(col_1_corr):
+                            direction = -1 if col_0_corr < 0 else 1
+                        else:
+                            direction = -1 if col_1_corr < 0 else 1
+                        # Convert both
+                        base_means_cond_0 = direction * base_means_cond_0
+                        base_means_cond_1 = direction * base_means_cond_1
+                        break # If none of them meet it then we don't change anything
+            # Compute difference as the distance between the two
+            distances = []
+            for i, cond_0 in enumerate(base_means_cond_0):
+                if cond_0 < 0:
+                    distances.append(base_means_cond_1[i] + abs(cond_0))
                 else:
-                    direction = -1 if col_1_corr < 0 else 1
-                # Convert both
-                base_means_cond_0 = direction * base_means_cond_0
-                base_means_cond_1 = direction * base_means_cond_1
-
-            stats_df['diff'] = base_means_cond_1 - base_means_cond_0
+                    distances.append(base_means_cond_1[i] - abs(cond_0))
+            stats_df['diff'] = distances
             stats_df['base_mean_cond_0'] = base_means_cond_0
             stats_df['base_mean_cond_1'] = base_means_cond_1
             self.u.dp(['Summary\n', f'Cond1: {num_cond_1} vs Cond0: {num_cond_0}\n',

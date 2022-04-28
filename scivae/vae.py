@@ -317,8 +317,8 @@ class VAE(object):
             optimizer.from_config(optimizer_config)
         self.vae.compile(optimizer=optimizer)
 
-
-    def encode(self, method='default', epochs=50, batch_size=50, train_percent=85.0, logging_dir=None, logfile=None):
+    def encode(self, method='default', epochs=50, batch_size=50, train_percent=85.0, logging_dir=None, logfile=None,
+               early_stop=False):
         """
         Encodes the data based on a given method.
 
@@ -344,15 +344,25 @@ class VAE(object):
             msg = self.u.msg.msg_arg_err("encode", "method", method, ['default', 'optimise'])
             self.u.err_p([msg])
             raise VAEException(msg)
-        if logging_dir:
+        # if logging_dir:
+        #     csv_logger = CSVLogger(logfile, append=True, separator=',')
+        #     self.vae.fit(self.training_input_np,
+        #                  epochs=epochs,
+        #                  batch_size=batch_size,
+        #                  shuffle=True,
+        #                  validation_data=(self.test_input_np, None),
+        #                  callbacks=[TensorBoard(log_dir=logging_dir), csv_logger]
+        #     )
+        if early_stop:
             csv_logger = CSVLogger(logfile, append=True, separator=',')
+            callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
             self.vae.fit(self.training_input_np,
-                         epochs=epochs,
-                         batch_size=batch_size,
-                         shuffle=True,
-                         validation_data=(self.test_input_np, None),
-                         callbacks=[TensorBoard(log_dir=logging_dir), csv_logger]
-            )
+                            epochs=epochs,
+                            batch_size=batch_size,
+                            shuffle=True,
+                            validation_data=(self.test_input_np, None),
+                         callbacks=[csv_logger, callback]
+                        )
         else:
             self.vae.fit(self.training_input_np,
                          epochs=epochs,
