@@ -25,7 +25,7 @@ from sklearn.model_selection import train_test_split
 
 from sciutil import SciUtil
 from scivae.util import convert_str_labels_to_ints
-
+import numpy as np
 
 class Validate(object):
 
@@ -41,6 +41,11 @@ class Validate(object):
         self.generate_test_train()
 
     def generate_test_train(self):
+        # remove any NAs from the dataset
+        self.data[np.isneginf(self.data)] = 0
+        self.data[np.isinf(self.data)] = 0
+        self.data[np.isnan(self.data)] = 0
+
         train_size = int(math.ceil(len(self.data) * self.train_split)) - 1
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(self.data, self.class_labels,
                                                                                 random_state=self.random_state,

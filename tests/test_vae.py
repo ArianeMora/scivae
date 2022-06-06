@@ -372,16 +372,26 @@ class TestVAE(unittest.TestCase):
         bounds = {'latent_num_nodes': [1, 2, 3, 4],
                   'encoding': [[1, 2, 3, 4], [1, 2, 3, 4]],
                   'decoding': [[1, 2, 3, 4], [1, 2, 3, 4]],
+
                   }
 
         data = f'{self.data_dir}iris.csv'
         value_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         # Build a simple vae to learn the relations in the iris dataset
         df = pd.read_csv(data)
-        optimiser = Optimiser(df[value_cols].values, df['label'].values, bounds)
+        bounds = {'latent_num_nodes': [30],
+                  'encoding': [[500, 250, 125, 64, 32], [250, 125, 64, 32, 16], [500, 250, 125, 64, 32, 16],
+                               [300, 150, 70, 36]],
+                  'decoding': [[500, 250, 125, 64, 32], [250, 125, 64, 32, 16], [500, 250, 125, 64, 32, 16],
+                               [300, 150, 70, 36]],
+                  'optimisers': ['adamax', 'rmsprop', 'sgd']}
+        optimiser = Optimiser(df[value_cols].values, df['label'].values, bounds=bounds)
         generations = 2  # Number of times to evole the population.
         population = 2  # Number of networks in each generation.
-        print(optimiser.optimise_architecture(num_generations=generations, population_size=population))
+        encoder_configs_and_score = optimiser.optimise_architecture(num_generations=generations,
+                                                                    population_size=population, print_out=True)
+
+        print(encoder_configs_and_score)
 
     def test_on_mnist(self):
         """
@@ -428,6 +438,13 @@ class TestVAE(unittest.TestCase):
 
         # Build a simple vae to learn the relations in the iris dataset
         # This will be terrible since we're only doing 2 epochs
+        test_data[np.isneginf(test_data)] = 0
+        test_data[np.isinf(test_data)] = 0
+        test_data[np.isnan(test_data)] = 0
+
+        train_data[np.isneginf(train_data)] = 0
+        train_data[np.isinf(train_data)] = 0
+        train_data[np.isnan(train_data)] = 0
         optimiser = Optimiser(train_data, train_labels, bounds,  validation_method="prediction",
                               epochs=1, batch_size=500)
         generations = 2  # Number of times to evole the population.
@@ -437,7 +454,7 @@ class TestVAE(unittest.TestCase):
         # {'config': vaes[0], 'fitness': fitness}
         vae = encoder_configs_and_score[0]['config']
         # we also want to display the VAE coloured by the labels
-        vae.print()
+        print(vae.config)
 
         plt.figure(figsize=(20, 2))
         n = num_images

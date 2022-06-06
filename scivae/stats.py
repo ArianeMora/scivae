@@ -212,6 +212,12 @@ class VAEStats:
             stats_df['base_mean_cond_1'] = base_means_cond_1
             self.u.dp(['Summary\n', f'Cond1: {num_cond_1} vs Cond0: {num_cond_0}\n',
                        stats_df.describe()])
+            # Also make a copy that also contains all the info from all the cases
+            # make this optional later on...
+            for c in cond_0_encodings:
+                stats_df[f'Cond0_{c}'] = cond_0_encodings[c][:, 0]
+            for c in cond_1_encodings:
+                stats_df[f'Cond1_{c}'] = cond_1_encodings[c][:, 0]
             return stats_df
         else:
             # Only one value so just do the test once.

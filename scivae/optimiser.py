@@ -36,7 +36,7 @@ class Optimiser(object):
 
     def __init__(self, data_np: np.array, labels: list, bounds: dict, validation_method='combined', retain=0.4,
                  random_select=0.1, mutate_chance=0.2, number_children=2, epochs=100, batch_size=5, limits=None,
-                 validation_params=None):
+                 validation_params=None, loss_starting=None):
         """
 
         Parameters
@@ -61,6 +61,7 @@ class Optimiser(object):
         self.epochs = epochs
         self.batch_size = batch_size
         self.validation_method = validation_method
+        self.loss_starting = loss_starting
         self.validation_params = validation_params if validation_params else \
             {'metric': 'combined', 'params': ('rf', 'accuracy', 10)}
 
@@ -156,32 +157,35 @@ class Optimiser(object):
         encoder_configs_and_score = []
         best_fitness = 1000000000000
         best_vae = None
-        for i in range(0, max_encoding_layers):
-            # optimise parameters
-            if self.limits is not None:
-                bounds = {'latent_num_nodes': range(self.limits['latent_num_nodes']['min'],
-                                                    self.limits['latent_num_nodes']['max'], increment),
-                          'encoding': [],
-                          'decoding': [],
-                          'optimisers': default_optimisers
-                          }
-            else:
-                bounds = {'latent_num_nodes': range(1, self.num_features, increment),
-                          'encoding': [],
-                          'decoding': [],
-                          'optimisers': default_optimisers
-                          }
-            if equal_encoding_decoding:
-                for j in range(i):
-                    if self.limits is not None:
-                        bounds['encoding'].append(range(self.limits['encoding']['min'], self.limits['encoding']['max'],
-                                                        increment))
-                        bounds['decoding'].append(range(self.limits['decoding']['min'], self.limits['decoding']['max'],
-                                                        increment))
-                    else:
-                        bounds['encoding'].append(range(1, self.num_features, increment))
-                        bounds['decoding'].append(range(1, self.num_features, increment))
 
+        for i in range(0, max_encoding_layers):
+            if self.bounds is None:
+                # optimise parameters
+                if self.limits is not None:
+                    bounds = {'latent_num_nodes': range(self.limits['latent_num_nodes']['min'],
+                                                        self.limits['latent_num_nodes']['max'], increment),
+                              'encoding': [],
+                              'decoding': [],
+                              'optimisers': default_optimisers
+                              }
+                else:
+                    bounds = {'latent_num_nodes': range(1, self.num_features, increment),
+                              'encoding': [],
+                              'decoding': [],
+                              'optimisers': default_optimisers
+                              }
+                if equal_encoding_decoding:
+                    for j in range(i):
+                        if self.limits is not None:
+                            bounds['encoding'].append(range(self.limits['encoding']['min'], self.limits['encoding']['max'],
+                                                            increment))
+                            bounds['decoding'].append(range(self.limits['decoding']['min'], self.limits['decoding']['max'],
+                                                            increment))
+                        else:
+                            bounds['encoding'].append(range(1, self.num_features, increment))
+                            bounds['decoding'].append(range(1, self.num_features, increment))
+            else:
+                bounds = self.bounds
             # Lets now get the configuration and score for these
             vaes = self.optimise_with_bounds(num_generations, population_size, bounds, print_out)
             vaes = sorted(vaes, key=lambda x: x.get_goodness_score(self.validation_method)) # For descending :  reverse=True
@@ -200,15 +204,17 @@ class Optimiser(object):
         print("Continuilly improving.")
         return encoder_configs_and_score
 
-    @staticmethod
-    def generate_config_from_bounds(bounds=dict):
+    def generate_config_from_bounds(self, bounds=dict):
         """
         Generate a random configuration of the vae configuration using the supplied bounds.
         Returns
         -------
 
         """
-        loss = {'loss_type': 'mse', 'distance_metric': 'mmd', 'mmd_weight': 1}
+        if self.loss_starting is None:
+            loss = {'loss_type': 'mse', 'distance_metric': 'mmd', 'mmd_weight': 1}
+        else:
+            loss = self.loss_starting
         config = {'loss': loss, 'encoding': {'layers': []}, 'decoding': {'layers': []},
                   'latent': {'num_nodes': random.choice(bounds['latent_num_nodes'])},
                   'optimiser': {'params': {}}}
@@ -473,7 +479,8 @@ class Optimiser(object):
 
         """
         for vae in vaes:
-            vae.encode(epochs=self.epochs, batch_size=self.batch_size, method='default')
+            vae.encode(epochs=self.epochs, batch_size=self.batch_size, method='default',
+                       early_stop=True)
 
     def get_average_goodness(self, vaes: list):
         """
