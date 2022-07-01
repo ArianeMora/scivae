@@ -358,12 +358,21 @@ class TestVAE(unittest.TestCase):
         lut = dict(zip(set(labels), sns.color_palette("coolwarm", len(set(labels)))))
         row_colors2 = pd.DataFrame(labels)[0].map(lut)
         vis_df['label'] = row_colors2
+<<<<<<< HEAD
         # scatter = Scatterplot(vis_df, 'latent_0', 'latent_1', colour=row_colors2, title='VAE', xlabel='latent')
         # scatter.plot()
         # plt.show()
         # vd = Validate(vae, labels)
         # print(vd.predict('rf', 'balanced_accuracy'))
         # print(vd.predict('svm', 'balanced_accuracy'))
+=======
+        scatter = Scatterplot(vis_df, 'latent_0', 'latent_1', colour=row_colors2, title='VAE', xlabel='latent')
+        scatter.plot()
+        plt.show()
+        vd = Validate(vae, labels)
+        print(vd.predict('rf', 'balanced_accuracy'))
+        print(vd.predict('svm', 'balanced_accuracy'))
+>>>>>>> 46f740ffbcd480b680d4bc02677c35846d416276
 
     def test_auto_optimise(self):
         """
