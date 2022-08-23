@@ -32,11 +32,7 @@ Check out the install page and the documentation or our package on pip: https://
 pip install scivae
 ```
 
-## Developers
-Install required packages
-```
-pip install -r requirements.txt
-```
+### Running 
 
 It is very easy to call the basic VAE. Simply install the package (or raw code). Then you need to setup 
 a config dictionary. This is pretty self explanatory. 
@@ -52,12 +48,17 @@ from scivae import *
 
 ```
 
-config_mse = {'loss': {'loss_type': 'mse', 'distance_metric': 'mmd', 'mmd_weight': 1}, 
-          'encoding': {'layers': [{'num_nodes': 32, 'activation_fn': 'selu'}, 
-                                  {'num_nodes': 16, 'activation_fn': 'selu'}]}, 
-          'decoding': {'layers': [{'num_nodes': 16, 'activation_fn': 'selu'}, 
-                                  {'num_nodes': 32, 'activation_fn': 'selu'}]}, 
- 'latent': {'num_nodes': 2}, 'optimiser': {'params': {}, 'name': 'adam'}}
+config = {'scale': False, # Whether to min max scale your data VAEs work best when data is pre-normalised & outliers removed for trainiing
+           'batch_norm': True, 
+          'loss': {'loss_type': 'mse', # mean squared error
+           'distance_metric': 'mmd', # Maximum mean discrepency (can use kl but it works worse)
+            'mmd_weight': 1}, # Weight of mmd vs mse - basically having this > 1 will weigh making it normally distributed higher
+            # and making it < 1 will make reconstruction better.
+          'encoding': {'layers': [{'num_nodes': 32, 'activation_fn': 'selu'}, # First layer of encoding
+                                  {'num_nodes': 16, 'activation_fn': 'selu'}]}, # Second layer of encoding
+          'decoding': {'layers': [{'num_nodes': 16, 'activation_fn': 'selu'},  # First layer of decoding
+                                  {'num_nodes': 32, 'activation_fn': 'selu'}]}, # Second layer of decoding 
+ 'latent': {'num_nodes': 2}, 'optimiser': {'params': {}, 'name': 'adam'}} # Empty params means use default
 
 ```
 
@@ -68,16 +69,15 @@ they just need to be a list of the same size - these are just used for downstrea
 Note for most configs we want input_data = output_data however I have left this modular so we can upgrade to having 
 it be denoising etc in the future.
 ```
-# vae_mse = VAE(input_data, output_data, labels, config_mse, 'vae_label')
-vae_mse = VAE(numeric_data, numeric_data, labels, config_mse, 'vae_label')
+vae_mse = VAE(numpy_array, numpy_array, labels, config, 'vae_label')
 # Set batch size and number of epochs
-vae_mse.encode('default', epochs=500, bacth_size=50)
+vae_mse.encode('default', epochs=500, bacth_size=50, early_stop=True)
 encoded_data_vae_mse = vae_mse.get_encoded_data()
 ``` 
 The VAE can also be used to encode new data.
 ```
-# Note the [0] on the end - the encoded data is just returned as the 0th element of a np array.
-new_data_encoded = vae_mse.encode_new_data(some_new_np_array)[0]
+# note this all needs to be normalised like you normalised the training data
+new_data_encoded = vae_mse.encode_new_data(some_new_np_array) # i.e. with your outliers in
 ```
 
 Visualisation is the same as if we got back the PCs from PCA. i.e. the below code will plot a scatter plot of the first 
@@ -87,8 +87,15 @@ and second latent nodes.
 plt.scatter(encoded_data_vae_mse[:,0], encoded_data_vae_mse[:,1])
 ```
 
+## Developers
+Install required packages
+```
+pip install -r requirements.txt
+```
+
 ## Tests
 See tests for further examples.
+
 
 ## References
         https://github.com/pren1/keras-MMD-Variational-Autoencoder/blob/master/Keras_MMD_Variational_Autoencoder.ipynb

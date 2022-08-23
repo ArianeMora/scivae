@@ -471,21 +471,21 @@ class TestVAE(unittest.TestCase):
         Tested
 
         """
-        config = {'loss': {'loss_type': 'mse', 'distance_metric': 'mmd', 'mmd_weight': 1},
+        config = {'scale_data': True,
+                 'loss': {'loss_type': 'mse', 'distance_metric': 'mmd', 'mmd_weight': 1},
                   'encoding': {'layers': [{'num_nodes': 203, 'activation_fn': 'selu'}]},
                   'decoding': {'layers': [{'num_nodes': 455, 'activation_fn': 'selu'}]},
                   'latent': {'num_nodes': 727}, 'optimiser': {'params': {}, 'name': 'adam'}}
         data_dir = f'{self.data_dir}/mnist/'
         image_size = 28
         # The more training the longer to run but the better your recon
-        num_images = 6 # 50000
+        num_images = 10 # 50000
         test_f = open(f'{data_dir}train-images-idx3-ubyte', 'rb')
         test_f.read(16)
 
         buf = test_f.read(image_size * image_size * num_images)
         test_data = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
         test_data = test_data.reshape(num_images, image_size * image_size)
-        # image = np.asarray(test_data[2]).squeeze()
 
         f = open(f'{data_dir}train-labels-idx1-ubyte', 'rb')
         f.read(8)
@@ -496,17 +496,18 @@ class TestVAE(unittest.TestCase):
             test_labels.append(labels[0])
 
         vae = VAE(test_data, test_data, test_labels, config, 'vae')
-        vae.encode('default', epochs=2, batch_size=1000, logging_dir=self.tmp_dir)
-        encoding = vae.get_encoded_data()
+        vae.encode('default', epochs=100, batch_size=100, logging_dir=self.tmp_dir)
+        encoding = vae.encode_new_data(test_data, scale=True)
         plt.figure(figsize=(20, 2))
         n = num_images
-        d = vae.vae.predict(test_data)
-        for i in range(n):
-            ax = plt.subplot(1, n, i + 1)
-            plt.imshow(d[i,:].reshape(28, 28))
 
+        for i in range(n):
+            d = vae.decoder.predict(np.array([encoding[i]]))
+            ax = plt.subplot(1, n, i + 1)
+            plt.imshow(d.reshape(28, 28))
         plt.show()
         plt.figure(figsize=(20, 2))
+
         for i in range(n):
             ax = plt.subplot(1, n, i + 1)
             plt.imshow(test_data[i].reshape(28, 28))
@@ -532,6 +533,3 @@ class TestVAE(unittest.TestCase):
         print(vd.predict('svm', 'balanced_accuracy'))
 
         print(vd.predict('svm', 'accuracy'))
-
-
-

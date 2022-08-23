@@ -18,7 +18,7 @@
 __title__ = 'scivae'
 __description__ = ''
 __url__ = 'https://github.com/ArianeMora/scivae.git'
-__version__ = '1.0.5'
+__version__ = '1.0.8'
 __author__ = 'Ariane Mora'
 __author_email__ = 'ariane.n.mora@gmail.com'
 __license__ = 'GPL3'
@@ -30,3 +30,4 @@ from scivae.optimiser import Optimiser
 from scivae.validate import Validate
 from scivae.vis import Vis
 from scivae.stats import VAEStats
+from scivae.conv_vae import ConvVAE
