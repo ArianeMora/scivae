@@ -46,9 +46,9 @@ setup(name='scivae',
           ]
       },
       install_requires=['pandas', 'numpy', 'Keras>=2.4.3', 'Keras-Applications>=1.0.8', 'matplotlib>=3.3.3', 'sciutil',
-                        'pyswarm', 'sklearn', 'tensorflow',
+                        'pyswarm', 'sklearn', 'tensorflow>=2.9',
                         'tensorflow-probability', 'seaborn', 'sciviso>=1.0.3', 'statsmodels',
                         'jupyterlab'],
-      python_requires='>=3.6',
+      python_requires='>=3.8',
       data_files=[("", ["LICENSE"])]
       )

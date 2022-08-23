@@ -18,7 +18,7 @@
 __title__ = 'scivae'
 __description__ = ''
 __url__ = 'https://github.com/ArianeMora/scivae.git'
-__version__ = '1.0.7'
+__version__ = '1.0.8'
 __author__ = 'Ariane Mora'
 __author_email__ = 'ariane.n.mora@gmail.com'
 __license__ = 'GPL3'

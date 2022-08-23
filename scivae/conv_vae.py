@@ -36,7 +36,7 @@ class ConvVAE(VAE):
         self.__last_encoding_shape = None
 
     def default_inputs(self):
-        self.inputs_x = Input(shape=(self.input_size, self.input_size, 1), name='default_input')
+        self.inputs_x = Input(shape=(self.input_size[0], self.input_size[1], 1), name='default_input')
         return self.inputs_x
 
     def build_encoder(self):
@@ -93,7 +93,6 @@ class ConvVAE(VAE):
         padding = layer.get('padding')
         x = Conv2DTranspose(filters=filters, kernel_size=kernel_size, padding=padding, strides=strides,
                    activation=activation_fn)(prev_layer)
-        #x = tf.keras.layers.MaxPool2D(pooling)(x)
         # Perform batch normalisation
         if self.batch_norm:
             x = BatchNormalization()(x)
