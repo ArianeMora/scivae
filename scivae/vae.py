@@ -26,6 +26,7 @@ from tensorflow.keras.callbacks import CSVLogger
 from numpy.random import seed
 import pickle
 from sklearn.preprocessing import MinMaxScaler
+from scivae.validate import Validate
 from tensorflow.keras.callbacks import TensorBoard
 import json
 from scivae import Loss
@@ -50,6 +51,7 @@ class VAE(object):
         https://arxiv.org/abs/1706.02262
         https://ermongroup.github.io/blog/a-tutorial-on-mmd-variational-autoencoders/
         https://github.com/tensorflow/tensorflow/issues/41053 for saving
+        https://bjlkeng.github.io/posts/semi-supervised-learning-with-variational-autoencoders/ for semi supervised
     """
 
     def __init__(self, input_data_np: np.array, output_data_np: np.array, labels: list, config, vae_label=None,
@@ -308,8 +310,18 @@ class VAE(object):
         # ------------ Out -----------------------
         self.outputs_y = self.decoder(self.encoder(self.inputs_x)[2])
         self.vae = Model(self.inputs_x, self.outputs_y, name='VAE_' + self.vae_label + '_scivae')
-        self.vae.add_loss(self.loss.get_loss(self.inputs_x, self.outputs_y, self.latent_z, self.latent_z_mean,
-                                  self.latent_z_log_sigma))
+        if self.config['loss']['loss_type']== 'ssmse':
+            # We want to pass it also the prediction on the VAE space
+            vd = Validate(self.encoder(self.inputs_x)[2], self.labels)
+            svm_acc = vd.predict('svm', 'accuracy')
+            ss_loss = 1 - svm_acc
+            # Overall recons
+            self.vae.add_loss(ss_loss + self.loss.get_loss(self.inputs_x, self.outputs_y, self.latent_z,
+                                                           self.latent_z_mean, self.latent_z_log_sigma))
+        else:
+            self.vae.add_loss(self.loss.get_loss(self.inputs_x, self.outputs_y, self.latent_z,
+                                                 self.latent_z_mean,
+                                      self.latent_z_log_sigma))
 
     def compile(self, optimizer=None, optimizer_config=None):
         optimizer = optimizer if optimizer is not None else self.optimiser(self.config['optimiser']['name'], self.config['optimiser']['params'])
@@ -357,7 +369,7 @@ class VAE(object):
         if early_stop:
             csv_logger = CSVLogger(logfile, append=True, separator=',')
             callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
-            self.vae.fit(self.training_input_np,
+            self.vae.fit(self.training_input_np, self.training_labels,
                             epochs=epochs,
                             batch_size=batch_size,
                             shuffle=True,
@@ -365,7 +377,7 @@ class VAE(object):
                          callbacks=[csv_logger, callback]
                         )
         else:
-            self.vae.fit(self.training_input_np,
+            self.vae.fit(self.training_input_np, self.training_labels,
                          epochs=epochs,
                          batch_size=batch_size,
                          shuffle=True,

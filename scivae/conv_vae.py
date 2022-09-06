@@ -15,7 +15,7 @@
 #                                                                             #
 ###############################################################################
 
-from tensorflow.keras.layers import Lambda, Input, Dense, BatchNormalization, Conv2D, Conv2DTranspose
+from tensorflow.keras.layers import Lambda, Input, Dense, BatchNormalization, Conv2D, Conv2DTranspose, Concatenate
 import tensorflow as tf
 import numpy as np
 from scivae import VAE
@@ -36,19 +36,44 @@ class ConvVAE(VAE):
         self.__last_encoding_shape = None
 
     def default_inputs(self):
-        self.inputs_x = Input(shape=(self.input_size[0], self.input_size[1], 1), name='default_input')
+        if self.multi_output:
+            # The first one always has to be 2D and second 1D
+            self.inputs_x = [Input(shape=(self.input_size[0][0], self.input_size[0][1], 1), name='default_input_0'),
+                             Input(shape=(self.input_size[1],), name='default_input_1')]
+        else:
+            self.inputs_x = Input(shape=(self.input_size[0], self.input_size[1], 1), name='default_input')
         return self.inputs_x
 
     def build_encoder(self):
         # Check if multi - if so we need to concatenate our layers see:
         # https://github.com/CancerAI-CL/IntegrativeVAEs/blob/master/code/models/xvae.py
         layer_start_idx = 0
-        self.encoding = self.inputs_x
+        if self.multi_output:
+            # If we have a fist layer if
+            layer = self.encoding_config['layers'][0]
+            # ToDo: refactor to handle arbitary number of inputs
+            # For now we just need to ensure the first two layers are encoded separately
+            # The first one is built using a conv layer
+            encoding_0 = self.build_encoding_layer(layer, self.inputs_x[0], layer['activation_fn'])
+            # We need to add a dense layer to combine these, we can't simply concatenate them because 1 is
+            # a
+            self.encoding = [encoding_0, self.inputs_x[1]]
+            layer_start_idx = 1  # Since we have already done the first
+        else:
+            self.encoding = self.inputs_x
         # Now for subsequent layers we run this
         for layer_idx in range(layer_start_idx, len(self.encoding_config['layers'])):
             layer = self.encoding_config['layers'][layer_idx]
-            self.encoding = self.build_encoding_layer(layer, self.encoding, layer['activation_fn'])
-        self.__last_encoding_shape = self.encoding.shape
+            # Again here we're only encoding the input data rather than the labels as well
+            if self.multi_output:
+                self.encoding[0] = self.build_encoding_layer(layer, self.encoding[0], layer['activation_fn'])
+            else:
+                self.encoding = self.build_encoding_layer(layer, self.encoding, layer['activation_fn'])
+
+        if self.multi_output:
+            self.__last_encoding_shape = [self.encoding[0].shape, self.encoding[1]] # We just pass the label through
+        else:
+            self.__last_encoding_shape = self.encoding.shape
         return self.encoding
 
     def build_decoder(self):
@@ -60,16 +85,42 @@ class ConvVAE(VAE):
         layer_end_idx = len(self.decoding_config['layers'])
         # Add in the first one which requires a reshape from the dense latent space
         s = self.__last_encoding_shape  # ToDo: make more general Only doing this for 2D conv
-        self.decoding = Dense(units=s[1] * s[2] * s[3], activation=tf.nn.relu)(self.decoding)
-        self.decoding = tf.keras.layers.Reshape(target_shape=(s[1], s[2], s[3]))(self.decoding)
+        if self.multi_output:
+            self.decoding = [Dense(units=s[0][1] * s[0][2] * s[0][3], activation=tf.nn.relu)(self.decoding),
+                             Dense(units=s[0][1] * s[0][2] * s[0][3], activation=tf.nn.relu)(self.decoding)]
+            # Here we reshape one of them but keep the other as just normal output rather than CNN
+            self.decoding[0] = tf.keras.layers.Reshape(target_shape=(s[0][1], s[0][2], s[0][3]))(self.decoding[0])
+        else:
+            self.decoding = Dense(units=s[1] * s[2] * s[3], activation=tf.nn.relu)(self.decoding)
+            self.decoding = tf.keras.layers.Reshape(target_shape=(s[1], s[2], s[3]))(self.decoding)
         for layer_idx in range(1, layer_end_idx - 1):
             layer = self.decoding_config['layers'][layer_idx]
-            self.decoding = self.build_decoding_layer(layer, self.decoding, layer['activation_fn'])
+            if self.multi_output:
+                self.decoding[0] = self.build_decoding_layer(layer[0], self.decoding[0], layer[0]['activation_fn'])
+                self.decoding[1] = self.build_layer(layer[1]['num_nodes'], self.decoding[1], layer[1]['activation_fn'])
+            else:
+                self.decoding = self.build_decoding_layer(layer, self.decoding, layer['activation_fn'])
 
         # Build the last layer
-        self.decoding = self.build_decoding_layer(self.decoding_config['layers'][-1], self.decoding,
-                                                  self.output_activation_fn)
+        if self.multi_output:
+            self.decoding = self.build_multi_output([self.decoding[0], self.decoding[1]])
+        else:
+            self.decoding = self.build_decoding_layer(self.decoding_config['layers'][-1], self.decoding,
+                                                      self.output_activation_fn)
         return self.decoding
+
+    def build_multi_output(self, decoding_layer):
+        """ ToDo: Modularise this to have an arbitary number of layers.
+        Note: the way this currently works, the labels have to be the second option and the data is the first! """
+        # Add in the final layer
+        decoder_0 = self.build_decoding_layer(self.decoding_config['layers'][-1][0], decoding_layer[0],
+                                              self.output_activation_fn)
+
+        # Add in final layer for decoder 2
+        decoder_1 = self.build_layer(self.decoding_config['layers'][-1][1]['num_nodes'], decoding_layer[1],
+                                     self.output_activation_fn)
+        decoder_1 = self.build_layer(self.output_size[1], decoder_1, self.output_activation_fn)
+        return [decoder_0, decoder_1]
 
     def build_encoding_layer(self, layer, prev_layer, activation_fn='selu'):
         filters = layer.get('filters')
@@ -100,7 +151,12 @@ class ConvVAE(VAE):
 
     def build_embedding(self):
         # Flatten before encoding!
-        self.encoding = tf.keras.layers.Flatten()(self.encoding)
+        # Check if it's the multi because we now combine it
+        if self.multi_output:
+            # Flatten the layers and concat our labels and the
+            self.encoding = tf.keras.layers.Flatten()(self.encoding[0])
+        else:
+            self.encoding = tf.keras.layers.Flatten()(self.encoding)
         self.latent_z_mean = Dense(self.latent_config['num_nodes'], name='z_mean')(self.encoding)
         self.latent_z_log_sigma = Dense(self.latent_config['num_nodes'], name='z_log_sigma',
                                         kernel_initializer='zeros')(self.encoding)

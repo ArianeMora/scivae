@@ -55,7 +55,7 @@ class TestCVAE(unittest.TestCase):
 
         """
         config = {'scale_data': False,
-                  'input_size': 28,
+                  'input_size': (28, 28),
                  'loss': {'loss_type': 'mse', 'distance_metric': 'mmd', 'mmd_weight': 1},
                   'encoding': {'layers': [{'filters': 64, 'kernel_size': 3, 'strides': 2, 'padding':'same',
                                           'activation_fn': 'selu'},
@@ -99,6 +99,74 @@ class TestCVAE(unittest.TestCase):
         n = num_images
         for i in range(n):
             d = vae.decoder.predict(np.array([encoding[i]]))
+            ax = plt.subplot(1, n, i + 1)
+            plt.imshow(d.reshape(28, 28))
+        plt.show()
+        plt.figure(figsize=(20, 2))
+
+        for i in range(n):
+            ax = plt.subplot(1, n, i + 1)
+            plt.imshow(test_data[i])
+
+        plt.show()
+
+    def test_multiloss_mnist(self):
+        """
+        Tested
+
+        """
+        config = {'scale_data': False,
+                  'input_size': [(28, 28), 10],
+                  'output_size': [(28, 28), 10],
+                 'loss': {'loss_type': 'multi', 'distance_metric': 'mmd', 'mmd_weight': 1,
+                          'multi_loss': ['mse', 'ce']},
+                  'encoding': {'layers': [{'filters': 64, 'kernel_size': 3, 'strides': 2, 'padding':'same',
+                                          'activation_fn': 'selu'}
+                                          ]},
+                  'decoding': {'layers': [[{'filters': 64, 'kernel_size': 3, 'strides': 2, 'padding':'same',
+                                          'activation_fn': 'selu'}, {'num_nodes': 8, 'activation_fn': 'selu'}],
+                                          [{'filters': 1, 'kernel_size': 3, 'strides': 2, 'padding': 'same',
+                                           'activation_fn': None}, {'num_nodes': 2, 'activation_fn': 'selu'},
+                                           {'num_nodes': 2, 'activation_fn': 'selu'}
+                                           ]
+                                          ]},
+                  'latent': {'num_nodes': 2}, 'optimiser': {'params': {}, 'name': 'adam'}}
+        data_dir = f'{self.data_dir}/mnist/'
+        image_size = 28
+        # The more training the longer to run but the better your recon
+        num_images = 10  # 50000
+        test_f = open(f'{data_dir}train-images-idx3-ubyte', 'rb')
+        test_f.read(16)
+
+        buf = test_f.read(image_size * image_size * num_images)
+        test_data = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
+
+        test_data = test_data.reshape((-1, 28, 28, 1)).astype('float32') #reshape(num_images, image_size * image_size)
+        test_data /= 255
+
+        def one_hot_encode(num_labels, label):
+            one_arr = np.zeros(num_labels)
+            one_arr[label] = 1
+            return one_arr
+
+        f = open(f'{data_dir}train-labels-idx1-ubyte', 'rb')
+        f.read(8)
+        test_labels = []
+        oh_labels = []
+        for i in range(0, len(test_data)):
+            buf = f.read(1)
+            labels = np.frombuffer(buf, dtype=np.uint8).astype(np.int64)
+            test_labels.append(labels[0])
+            oh_labels.append(one_hot_encode(10, labels[0]))
+
+        oh_labels = np.asarray(oh_labels)
+        vae = ConvVAE([test_data, oh_labels], [test_data, oh_labels], test_labels, config, 'vae')
+        vae.encode('default', epochs=100, batch_size=100, logging_dir=self.tmp_dir)
+        encoding = vae.encode_new_data([test_data, oh_labels], scale=False)
+        plt.figure(figsize=(20, 2))
+        n = num_images
+        for i in range(n):
+            d = vae.decoder.predict(np.array([encoding[i]]))[0]
             ax = plt.subplot(1, n, i + 1)
             plt.imshow(d.reshape(28, 28))
         plt.show()

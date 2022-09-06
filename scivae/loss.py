@@ -39,7 +39,7 @@ class Loss:
     """
 
     def __init__(self, loss_type: str, distance_metric: str, mmd_weight: float, multi_loss=None, sciutil=None,
-                 mmcd_method='k',  beta=1.0, input_size=None):
+                 mmcd_method='k', beta=1.0, input_size=None):
         """
 
         Parameters
@@ -51,8 +51,7 @@ class Loss:
         """
         self.u = sciutil if sciutil is not None else SciUtil()
         self.mmd_weight = mmd_weight
-
-        self.loss_types = ['ce', 'mse', 'cor', 'cor-mse', 'multi', 'mae']
+        self.loss_types = ['ce', 'mse', 'cor', 'cor-mse', 'multi', 'mae', 'ssmse']
         if loss_type not in self.loss_types:
             msg = self.u.msg.msg_arg_err("Loss __init__", "loss", loss_type, self.loss_types)
             self.u.err_p([msg])
@@ -83,8 +82,12 @@ class Loss:
         if isinstance(input_size, list):
             total = 0
             for s in input_size:
-                total += s
-            self.sizes = [s/total for s in input_size]
+                # This allows us to have it for the conv network as well
+                if isinstance(s, tuple):
+                    total += s[0]*s[1]
+                else:
+                    total += s
+            self.sizes = [s/total if isinstance(s, int) else (s[0] * s[1])/total for s in input_size]
 
     def get_loss(self, inputs_x, outputs_y, latent_z, latent_z_mean, latent_z_log_sigma) -> float:
         """
@@ -102,7 +105,7 @@ class Loss:
         elif self.distance_metric == 'bmmd':
             distance = self.get_bimodal_mmd_distance(latent_z)
         elif self.distance_metric == 'mmcd':
-            istance = self.get_mmcd_distance(latent_z, latent_z_mean, latent_z_log_sigma, self.mmcd_method)
+            distance = self.get_mmcd_distance(latent_z, latent_z_mean, latent_z_log_sigma, self.mmcd_method)
         elif self.distance_metric == 'kl-mmd':
             distance = self.get_mmd_distance(latent_z) + self.get_kl_distance(latent_z_mean, latent_z_log_sigma)
         else:
@@ -113,7 +116,7 @@ class Loss:
         # Get reconstruction loss
         if self.loss_type == 'ce':
             reconstruction_loss = self.get_binary_crossentropy_loss(inputs_x, outputs_y)
-        elif self.loss_type == 'mse':
+        elif self.loss_type == 'mse' or self.loss_type == 'ssmse':
             reconstruction_loss = self.get_mean_squared_error_loss(inputs_x, outputs_y)
         elif self.loss_type == 'cor':
             reconstruction_loss = self.get_correlation_loss(inputs_x, outputs_y)
