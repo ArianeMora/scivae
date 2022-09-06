@@ -21,6 +21,8 @@ import numpy as np
 from scivae import VAE
 
 
+from tensorflow.keras.layers import Dropout
+
 class ConvVAE(VAE):
 
     """
@@ -57,7 +59,7 @@ class ConvVAE(VAE):
             encoding_0 = self.build_encoding_layer(layer, self.inputs_x[0], layer['activation_fn'])
             # We need to add a dense layer to combine these, we can't simply concatenate them because 1 is
             # a
-            self.encoding = [encoding_0, self.inputs_x[1]]
+            self.encoding = [encoding_0]
             layer_start_idx = 1  # Since we have already done the first
         else:
             self.encoding = self.inputs_x
@@ -71,7 +73,7 @@ class ConvVAE(VAE):
                 self.encoding = self.build_encoding_layer(layer, self.encoding, layer['activation_fn'])
 
         if self.multi_output:
-            self.__last_encoding_shape = [self.encoding[0].shape, self.encoding[1]] # We just pass the label through
+            self.__last_encoding_shape = [self.encoding[0].shape]  # We just pass the label through
         else:
             self.__last_encoding_shape = self.encoding.shape
         return self.encoding
@@ -130,7 +132,9 @@ class ConvVAE(VAE):
         padding = layer.get('padding')
         x = Conv2D(filters=filters, kernel_size=kernel_size, padding=padding, strides=strides,
                    activation=activation_fn)(prev_layer)
-        #x = tf.keras.layers.MaxPool2D(pooling)(x)
+        dropout = layer.get('dropout')
+        if dropout:
+            x = Dropout(dropout)(x)
         # Perform batch normalisation
         if self.batch_norm:
             x = BatchNormalization()(x)
@@ -144,6 +148,9 @@ class ConvVAE(VAE):
         padding = layer.get('padding')
         x = Conv2DTranspose(filters=filters, kernel_size=kernel_size, padding=padding, strides=strides,
                    activation=activation_fn)(prev_layer)
+        dropout = layer.get('dropout')
+        if dropout:
+            x = Dropout(dropout)(x)
         # Perform batch normalisation
         if self.batch_norm:
             x = BatchNormalization()(x)
@@ -162,4 +169,3 @@ class ConvVAE(VAE):
                                         kernel_initializer='zeros')(self.encoding)
         self.latent_z = Lambda(self.sample, output_shape=(self.latent_config['num_nodes'],), name='z')([
             self.latent_z_mean, self.latent_z_log_sigma])
-
