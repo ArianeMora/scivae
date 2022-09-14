@@ -39,7 +39,7 @@ class Loss:
     """
 
     def __init__(self, loss_type: str, distance_metric: str, mmd_weight: float, multi_loss=None, sciutil=None,
-                 mmcd_method='k', beta=1.0, input_size=None):
+                 mmcd_method='k', beta=1.0, input_size=None, other_configs=None):
         """
 
         Parameters
@@ -79,6 +79,7 @@ class Loss:
         self.beta = beta or 1.0
         self.mmcd_method = mmcd_method
         self.sizes = input_size
+        self.other_configs = other_configs if other_configs is not None else {}
         if isinstance(input_size, list):
             total = 0
             for s in input_size:
@@ -128,19 +129,25 @@ class Loss:
             reconstruction_loss = 0
             # ToDo: Modularise.
             loss_idx = 0
-            for loss_method in self.multi_loss_fn:
+            loss_weightings = self.other_configs.get('loss_weightings')
+            for j, loss_method in enumerate(self.multi_loss_fn):
+                if loss_weightings is not None:
+                    weight = loss_weightings[j]
+                else:
+                    weight = 1.0
                 if loss_method == 'ce':
-                    reconstruction_loss += self.get_binary_crossentropy_loss(inputs_x[loss_idx],
+                    # This way if we don't have a label we aren't actually checking for the reconstruction if that
+                    reconstruction_loss += weight * self.get_binary_crossentropy_loss(inputs_x[loss_idx],
                                                                              outputs_y[loss_idx])
                 elif loss_method == 'mse':
                     # normalise to the number of features
-                    reconstruction_loss += self.get_mean_squared_error_loss(inputs_x[loss_idx],
+                    reconstruction_loss += weight * self.get_mean_squared_error_loss(inputs_x[loss_idx],
                                                                             outputs_y[loss_idx])*self.sizes[loss_idx]
                 elif loss_method == 'cor':
-                    reconstruction_loss += self.get_correlation_loss(inputs_x[loss_idx],
+                    reconstruction_loss += weight * self.get_correlation_loss(inputs_x[loss_idx],
                                                                      outputs_y[loss_idx])*self.sizes[loss_idx]
                 elif loss_method == 'mae':
-                    reconstruction_loss += self.get_mean_absolute_error_loss(inputs_x[loss_idx],
+                    reconstruction_loss += weight * self.get_mean_absolute_error_loss(inputs_x[loss_idx],
                                                                              outputs_y[loss_idx])
                 loss_idx += 1
         else:

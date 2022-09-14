@@ -96,7 +96,8 @@ class VAE(object):
         self.model_type = None
         self.loss = Loss(config['loss']['loss_type'], config['loss']['distance_metric'],
                          config['loss']['mmd_weight'], config['loss'].get('multi_loss'),
-                         beta=config['loss'].get('beta'), mmcd_method=config['loss'].get('mmcd_method'), input_size=config['input_size'])
+                         beta=config['loss'].get('beta'), mmcd_method=config['loss'].get('mmcd_method'),
+                         input_size=config['input_size'], other_configs=config['loss'])
         self.encoding_config = config['encoding']
         self.decoding_config = config['decoding']
         self.latent_config = config['latent']
@@ -272,9 +273,6 @@ class VAE(object):
         return [decoder_0, decoder_1]
 
     def build_embedding(self):
-        # if self.loss.distance_metric == 'mmd':
-        #     self.latent_z = Dense(self.latent_config['num_nodes'], name='z')(self.encoding)
-        # else:
         self.latent_z_mean = Dense(self.latent_config['num_nodes'], name='z_mean')(self.encoding)
         self.latent_z_log_sigma = Dense(self.latent_config['num_nodes'], name='z_log_sigma',
                                         kernel_initializer='zeros')(self.encoding)

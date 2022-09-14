@@ -119,7 +119,7 @@ class TestCVAE(unittest.TestCase):
                   'input_size': [(28, 28), 10],
                   'output_size': [(28, 28), 10],
                  'loss': {'loss_type': 'multi', 'distance_metric': 'mmd', 'mmd_weight': 1,
-                          'multi_loss': ['mse', 'ce']},
+                          'multi_loss': ['mse', 'ce'], 'loss_weightings': [0.5, 2.0]},
                   'encoding': {'layers': [{'filters': 64, 'kernel_size': 3, 'strides': 2, 'padding':'same',
                                           'activation_fn': 'selu'}
                                           ]},
