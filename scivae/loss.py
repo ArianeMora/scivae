@@ -84,7 +84,7 @@ class Loss:
             total = 0
             for s in input_size:
                 # This allows us to have it for the conv network as well
-                if isinstance(s, tuple):
+                if isinstance(s, tuple) or isinstance(s, list):
                     total += s[0]*s[1]
                 else:
                     total += s
