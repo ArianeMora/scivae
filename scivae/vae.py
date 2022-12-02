@@ -27,7 +27,6 @@ from numpy.random import seed
 import pickle
 from sklearn.preprocessing import MinMaxScaler
 from scivae.validate import Validate
-from tensorflow.keras.callbacks import TensorBoard
 import json
 from scivae import Loss
 from sciutil import SciException, SciUtil
@@ -559,8 +558,7 @@ class VAE(object):
             return optimizers.Adamax(learning_rate=learning_rate, beta_1=beta_1, beta_2=beta_2)
 
         elif optimiser_name == 'adam':
-            return optimizers.Adam(learning_rate=learning_rate, beta_1=beta_1, decay=decay,
-                                   beta_2=beta_2, amsgrad=amsgrad)
+            return optimizers.Adam(learning_rate=learning_rate, beta_1=beta_1, beta_2=beta_2, amsgrad=amsgrad)
 
         elif optimiser_name == 'adadelta':
             return optimizers.Adadelta(learning_rate=learning_rate, rho=rho)

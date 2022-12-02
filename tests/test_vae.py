@@ -70,9 +70,9 @@ class TestVAE(unittest.TestCase):
         vis = Vis(vae, vae.u, None)
         vis.plot_node_hists(show_plt=True, save_fig=False)
         vis.plot_node_feature_correlation(vae_df, 'external_gene_name', columns=new_cols, show_plt=True, save_fig=False)
-
-        vis.plot_feature_scatters(vae_df, 'external_gene_name', columns=new_cols, show_plt=True, fig_type="png", save_fig=True,
-                                  title="latent space", output_dir='test_figures/')
+        #
+        # vis.plot_feature_scatters(vae_df, 'external_gene_name', columns=new_cols, show_plt=True, fig_type="png", save_fig=True,
+        #                           title="latent space", output_dir='test_figures/')
 
         cool_genes = [['Emx1', 'Eomes', 'Tbr1', 'Foxg1', 'Lhx6', 'Arx', 'Dlx1', 'Dlx2', 'Dlx5', 'Nr2e2', 'Otx2'],
                       ['Hoxd8', 'Hoxd9', 'Hoxd10', 'Hoxd11', 'Hoxd12', 'Hoxd13', 'Hoxa7', 'Hoxa9', 'Hoxa10', 'Hoxa11',
