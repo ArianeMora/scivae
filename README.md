@@ -26,16 +26,18 @@ Validate allows for running simple validations using scikitlearn i.e. if your pr
  of labels and seeing if a simple classifier can distingush your classes better than with the raw data.
 
 ## Users
+Tested in python 3.10 on a Mac (without M1 chip - this won't work on a Mac with a M1 since they don't work well with tensorflow).
 
-Check out the install page and the documentation or our package on pip: https://pypi.org/project/scivae/1.0.4/ 
+Check out the install page and the documentation or our package on pip: https://pypi.org/project/scivae
 ```
 pip install scivae
 ```
 
-### Running 
+### Documentation 
 
 It is very easy to call the basic VAE. Simply install the package (or raw code). Then you need to setup 
 a config dictionary. This is pretty self explanatory. 
+
 
 ```
 from scivae import *
@@ -87,11 +89,7 @@ and second latent nodes.
 plt.scatter(encoded_data_vae_mse[:,0], encoded_data_vae_mse[:,1])
 ```
 
-## Developers
-Install required packages
-```
-pip install -r requirements.txt
-```
+### Real documentation is coming - if you want it raise an issue for what you are interested in and give me a cheeky star 
 
 ## Tests
 See tests for further examples.
