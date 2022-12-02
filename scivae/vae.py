@@ -26,6 +26,7 @@ from tensorflow.keras.callbacks import CSVLogger
 from numpy.random import seed
 import pickle
 from sklearn.preprocessing import MinMaxScaler
+from scivae.validate import Validate
 from tensorflow.keras.callbacks import TensorBoard
 import json
 from scivae import Loss
@@ -50,6 +51,7 @@ class VAE(object):
         https://arxiv.org/abs/1706.02262
         https://ermongroup.github.io/blog/a-tutorial-on-mmd-variational-autoencoders/
         https://github.com/tensorflow/tensorflow/issues/41053 for saving
+        https://bjlkeng.github.io/posts/semi-supervised-learning-with-variational-autoencoders/ for semi supervised
     """
 
     def __init__(self, input_data_np: np.array, output_data_np: np.array, labels: list, config, vae_label=None,
@@ -94,7 +96,8 @@ class VAE(object):
         self.model_type = None
         self.loss = Loss(config['loss']['loss_type'], config['loss']['distance_metric'],
                          config['loss']['mmd_weight'], config['loss'].get('multi_loss'),
-                         beta=config['loss'].get('beta'), mmcd_method=config['loss'].get('mmcd_method'), input_size=config['input_size'])
+                         beta=config['loss'].get('beta'), mmcd_method=config['loss'].get('mmcd_method'),
+                         input_size=config['input_size'], other_configs=config['loss'])
         self.encoding_config = config['encoding']
         self.decoding_config = config['decoding']
         self.latent_config = config['latent']
@@ -270,9 +273,6 @@ class VAE(object):
         return [decoder_0, decoder_1]
 
     def build_embedding(self):
-        # if self.loss.distance_metric == 'mmd':
-        #     self.latent_z = Dense(self.latent_config['num_nodes'], name='z')(self.encoding)
-        # else:
         self.latent_z_mean = Dense(self.latent_config['num_nodes'], name='z_mean')(self.encoding)
         self.latent_z_log_sigma = Dense(self.latent_config['num_nodes'], name='z_log_sigma',
                                         kernel_initializer='zeros')(self.encoding)
@@ -308,8 +308,19 @@ class VAE(object):
         # ------------ Out -----------------------
         self.outputs_y = self.decoder(self.encoder(self.inputs_x)[2])
         self.vae = Model(self.inputs_x, self.outputs_y, name='VAE_' + self.vae_label + '_scivae')
-        self.vae.add_loss(self.loss.get_loss(self.inputs_x, self.outputs_y, self.latent_z, self.latent_z_mean,
-                                  self.latent_z_log_sigma))
+
+        if self.config['loss']['loss_type'] == 'ssmse':  # ToDo: Update to re-include the ssMSE
+            # We want to pass it also the prediction on the VAE space
+            vd = Validate(self.encoder(self.inputs_x)[2], self.labels)
+            svm_acc = vd.predict('svm', 'accuracy')
+            ss_loss = 1 - svm_acc
+            # Overall recons
+            self.vae.add_loss(ss_loss + self.loss.get_loss(self.inputs_x, self.outputs_y, self.latent_z,
+                                                           self.latent_z_mean, self.latent_z_log_sigma))
+        else:
+            self.vae.add_loss(self.loss.get_loss(self.inputs_x, self.outputs_y, self.latent_z,
+                                                 self.latent_z_mean,
+                                      self.latent_z_log_sigma))
 
     def compile(self, optimizer=None, optimizer_config=None):
         optimizer = optimizer if optimizer is not None else self.optimiser(self.config['optimiser']['name'], self.config['optimiser']['params'])
@@ -357,7 +368,7 @@ class VAE(object):
         if early_stop:
             csv_logger = CSVLogger(logfile, append=True, separator=',')
             callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
-            self.vae.fit(self.training_input_np,
+            self.vae.fit(self.training_input_np, self.training_labels,
                             epochs=epochs,
                             batch_size=batch_size,
                             shuffle=True,
@@ -365,7 +376,7 @@ class VAE(object):
                          callbacks=[csv_logger, callback]
                         )
         else:
-            self.vae.fit(self.training_input_np,
+            self.vae.fit(self.training_input_np, self.training_labels,
                          epochs=epochs,
                          batch_size=batch_size,
                          shuffle=True,

@@ -22,19 +22,17 @@ from sklearn.linear_model import LogisticRegression, LinearRegression
 import math
 from sklearn.model_selection import train_test_split
 
-
 from sciutil import SciUtil
 from scivae.util import convert_str_labels_to_ints
 import numpy as np
 
 class Validate(object):
 
-    def __init__(self, vae, class_labels: list, train_percentage=85.0, random_state=17, sciutil=None):
+    def __init__(self, encoding, class_labels: list, train_percentage=85.0, random_state=17, sciutil=None):
         self.u = sciutil if sciutil is not None else SciUtil()
-        self.vae = vae
         self.class_labels = convert_str_labels_to_ints(class_labels)
         self.train_split = train_percentage/100.0
-        self.data = vae.get_encoded_data()
+        self.data = encoding
         self.X_train, self.X_test, self.y_train, self.y_test = None, None, None, None
         # Generate the training and testing data
         self.random_state = random_state
