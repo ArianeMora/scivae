@@ -276,7 +276,7 @@ class Optimiser(object):
         # Otherwise we need to calculate the validation error
         from scivae import Validate
 
-        vd = Validate(vae, self.labels)
+        vd = Validate(vae.get_encoded_data(), self.labels)
         score = vd.predict(*self.validation_params['params'])
         vae.set_validation_score(score)
 

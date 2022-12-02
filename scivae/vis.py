@@ -139,8 +139,6 @@ class Vis:
             'figsize': (4, 4),
             'cluster_cols': True,
             'cluster_rows': True,
-            'vmin': -1,
-            'vmax': 1,
             'cmap': 'RdBu_r',
             'title': title,
         }

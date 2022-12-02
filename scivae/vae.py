@@ -308,7 +308,8 @@ class VAE(object):
         # ------------ Out -----------------------
         self.outputs_y = self.decoder(self.encoder(self.inputs_x)[2])
         self.vae = Model(self.inputs_x, self.outputs_y, name='VAE_' + self.vae_label + '_scivae')
-        if self.config['loss']['loss_type']== 'ssmse':
+
+        if self.config['loss']['loss_type'] == 'ssmse':  # ToDo: Update to re-include the ssMSE
             # We want to pass it also the prediction on the VAE space
             vd = Validate(self.encoder(self.inputs_x)[2], self.labels)
             svm_acc = vd.predict('svm', 'accuracy')

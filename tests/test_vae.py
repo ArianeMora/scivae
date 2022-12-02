@@ -185,7 +185,7 @@ class TestVAE(unittest.TestCase):
         Tested
         """
         for t in ['mmd']:
-            loss = {'loss_type': 'ssmse', 'distance_metric': t, 'mmd_weight': 1.0, 'beta': 1.0, 'mmcd_method': 'k'}
+            loss = {'loss_type': 'mse', 'distance_metric': t, 'mmd_weight': 1.0, 'beta': 1.0, 'mmcd_method': 'k'}
             encoding = {'layers': []}#[{'num_nodes': 3, 'activation_fn': 'selu'}]} #, {'num_nodes': 3, 'activation_fn': 'relu'}]}
             decoding = {'layers': []} #[{'num_nodes': 3, 'activation_fn': 'selu'}]}
             latent = {'num_nodes': 2}
@@ -196,7 +196,7 @@ class TestVAE(unittest.TestCase):
             df = pd.read_csv(data)
             value_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
             vae = VAE(df[value_cols].values, df[value_cols].values, df['label'].values, config, 'vae')
-            vae.encode('default', batch_size=40, logging_dir=self.tmp_dir)
+            vae.encode('default', batch_size=40)
 
             # Lets have a look at a scatterplot version & apply the class colours to our plot
             encoding = vae.get_encoded_data()
@@ -387,7 +387,7 @@ class TestVAE(unittest.TestCase):
         scatter = Scatterplot(vis_df, 'latent_0', 'latent_1', colour=row_colors2, title='VAE', xlabel='latent')
         scatter.plot()
         plt.show()
-        vd = Validate(vae, labels)
+        vd = Validate(encoding, labels)
         print(vd.predict('rf', 'balanced_accuracy'))
         print(vd.predict('svm', 'balanced_accuracy'))
 
@@ -419,7 +419,7 @@ class TestVAE(unittest.TestCase):
 
     def test_auto_optimise(self):
         """
-        Tested
+        ToDo: FIX --> though no one uses the swarm yet.
         """
         bounds = {'latent_num_nodes': [1, 2, 3, 4],
                   'encoding': [[1, 2, 3, 4], [1, 2, 3, 4]],
@@ -447,11 +447,11 @@ class TestVAE(unittest.TestCase):
 
     def test_on_mnist(self):
         """
-        Tested
+        Tested.
         """
         data_dir = f'{self.data_dir}/mnist/'
         image_size = 28
-        num_images = 6 # More images the better just takes alot longer
+        num_images = 6  # More images the better just takes alot longer
         training_f = open(f'{data_dir}train-images-idx3-ubyte', 'rb')
         training_f.read(16)
         buf = training_f.read(image_size * image_size * num_images)
@@ -486,6 +486,7 @@ class TestVAE(unittest.TestCase):
         bounds = {'latent_num_nodes': [1, 2, 4, 16],
                   'encoding': [[64, 128, 512, 1064], [64, 128, 512, 1064]],
                   'decoding': [[64, 128, 512, 1064], [64, 128, 512, 1064]],
+                  'optimisers': ['adamax', 'adam']
                   }
 
         # Build a simple vae to learn the relations in the iris dataset
@@ -587,7 +588,7 @@ class TestVAE(unittest.TestCase):
         # Have to make labels a 1 and 0 --> note this is just a tpy example to exn
         labels = np.array(labels)
         labels = 1 * (labels > 0)
-        vd = Validate(vae, labels)
+        vd = Validate(vae.get_encoded_data(), labels)
         print(vd.predict('svm', 'balanced_accuracy'))
 
         print(vd.predict('svm', 'accuracy'))
