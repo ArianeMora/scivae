@@ -180,6 +180,63 @@ class TestVAE(unittest.TestCase):
             vis.plot_feature_correlation(vae_df, 'gene_name', columns=cols, show_plt=True, save_fig=False)
             vis.plot_input_distribution(vae_df, show_plt=True, save_fig=False)
 
+    def test_missing(self):
+        """
+        Create dataset if this hasn't already been done. If data is "missing" it has a negative value.
+        """
+        df = pd.read_csv('data/iris.csv')
+        # Randomly set intervals to -1 i.e. 5% of dataset 10%, 20%, 50%
+        make_ds = True
+        if make_ds:
+            for s in [0.05, 0.1, 0.25, 0.5, 0.75]:
+                new_df = df[['label', 'sepal_length', 'sepal_width']].copy()
+                for col in df.columns:
+                    if col != 'label' and col != 'sepal_length': # and col != 'sepal_width': # i.e. always have 1 non-zero
+                        idxs = np.random.randint(0, len(df), size=int(len(df)*s))
+                        vals = df[col].values
+                        vals[idxs] = -1  # Set random list to -1
+                        new_df[col] = vals
+                new_df.to_csv(f'data/iris_nn_{s}.csv', index=False)
+
+        for s in [0.05, 0.1, 0.25, 0.5, 0.75]:
+            loss = {'loss_type': 'nn_sse', 'distance_metric': 'mmd', 'mmd_weight': 0.01, 'beta': 1.0, 'mmcd_method': 'k'}
+            encoding = {'layers': []} #{'num_nodes': 2, 'activation_fn': 'selu'}]} #, {'num_nodes': 3, 'activation_fn': 'relu'}]}
+            decoding = {'layers': []} #{'num_nodes': 2, 'activation_fn': 'selu'}]}
+            latent = {'num_nodes': 2}
+            optimisers = {'name': 'adam', 'params': {}}
+            config = {'loss': loss, 'encoding': encoding, 'decoding': decoding, 'latent': latent, 'optimiser': optimisers}
+            data = f'{self.data_dir}iris_nn_{s}.csv'
+            # Build a simple vae to learn the relations in the iris dataset
+            df = pd.read_csv(data)
+            value_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+            vae = VAE(df[value_cols].values, df[value_cols].values, df['label'].values, config, 'vae')
+            vae.encode('default', batch_size=40)
+
+            # Lets have a look at a scatterplot version & apply the class colours to our plot
+            encoding = vae.get_encoded_data()
+
+            decoding = vae.decoder.predict(encoding)
+            print(decoding)
+            vis_df = pd.DataFrame()
+            vis_df['latent_0'] = encoding[:, 0]
+            vis_df['latent_1'] = encoding[:, 1]
+            labels = df['label'].values
+            lut = dict(zip(set(labels), sns.color_palette("coolwarm", len(set(labels)))))
+            row_colors2 = pd.DataFrame(labels)[0].map(lut)
+            vis_df['label'] = row_colors2
+
+            vd = Validate(vae.get_encoded_data(), labels)
+            rf_acc = int(100 * vd.predict('rf', 'accuracy'))
+            print(rf_acc)
+            svm_acc = int(100 * vd.predict('svm', 'balanced_accuracy'))
+            print(svm_acc)
+
+            scatter = Scatterplot(vis_df, 'latent_0', 'latent_1', colour=row_colors2,
+                                  title=f'Loss {s} acc svm:{svm_acc}% acc rf:{rf_acc}%',
+                                  xlabel='')
+            scatter.plot()
+            plt.show()
+
     def test_vae(self):
         """
         Tested

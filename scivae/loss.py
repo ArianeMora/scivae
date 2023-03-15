@@ -51,7 +51,8 @@ class Loss:
         """
         self.u = sciutil if sciutil is not None else SciUtil()
         self.mmd_weight = mmd_weight
-        self.loss_types = ['ce', 'mse', 'cor', 'cor-mse', 'multi', 'mae', 'ssmse']
+        self.loss_types = ['ce', 'mse', 'cor', 'cor-mse', 'multi', 'mae', 'nn_mse', 'nn_ce',
+                           'sse', 'nn_sse', 'rmse', 'nn_rmse']
         if loss_type not in self.loss_types:
             msg = self.u.msg.msg_arg_err("Loss __init__", "loss", loss_type, self.loss_types)
             self.u.err_p([msg])
@@ -117,14 +118,22 @@ class Loss:
         # Get reconstruction loss
         if self.loss_type == 'ce':
             reconstruction_loss = self.get_binary_crossentropy_loss(inputs_x, outputs_y)
-        elif self.loss_type == 'mse' or self.loss_type == 'ssmse':
+        elif self.loss_type == 'mse':
             reconstruction_loss = self.get_mean_squared_error_loss(inputs_x, outputs_y)
+        elif self.loss_type == 'sse':
+            reconstruction_loss = self.get_sum_squared_error_loss(inputs_x, outputs_y)
         elif self.loss_type == 'cor':
             reconstruction_loss = self.get_correlation_loss(inputs_x, outputs_y)
         elif self.loss_type == 'cor-mse':
             reconstruction_loss = self.get_correlation_mse_loss(inputs_x, outputs_y)
         elif self.loss_type == 'mae':
             reconstruction_loss = self.get_mean_absolute_error_loss(inputs_x, outputs_y)
+        elif self.loss_type == 'nn_mse':
+            reconstruction_loss = self.get_nn_mean_squared_error_loss(inputs_x, outputs_y)
+        elif self.loss_type == 'nn_ce':
+            reconstruction_loss = self.get_nn_binary_crossentropy_loss(inputs_x, outputs_y)
+        elif self.loss_type == 'nn_sse':
+            reconstruction_loss = self.get_nn_sum_squared_error_loss(inputs_x, outputs_y)
         elif self.loss_type == 'multi':
             reconstruction_loss = 0
             # ToDo: Modularise.
@@ -143,6 +152,10 @@ class Loss:
                     # normalise to the number of features
                     reconstruction_loss += weight * self.get_mean_squared_error_loss(inputs_x[loss_idx],
                                                                             outputs_y[loss_idx])*self.sizes[loss_idx]
+                elif loss_method == 'nn_mse':
+                    reconstruction_loss += weight * self.get_nn_mean_squared_error_loss(inputs_x[loss_idx],
+                                                                                     outputs_y[loss_idx]) * self.sizes[
+                                               loss_idx]
                 elif loss_method == 'cor':
                     reconstruction_loss += weight * self.get_correlation_loss(inputs_x[loss_idx],
                                                                      outputs_y[loss_idx])*self.sizes[loss_idx]
@@ -173,14 +186,73 @@ class Loss:
         return K.sum(K.binary_crossentropy(input_x, output_y, from_logits=True), axis=1)
 
     @staticmethod
+    def get_nn_mean_squared_error_loss(input_x, output_y):
+        """
+        Basically when we have a super variable sized input I'm gonna test what the effect is when we only compute
+        the MSE on the non-negative inputs. Note this assumes that the input are all > 0
+        Args:
+            input_x:
+            output_y:
+
+        Returns:
+
+        """
+        # Take indicies of only the non-zero input or non-something
+        mask = tf.cast((input_x > 0), 'float32')
+        non_zero_x = mask*input_x
+        non_zero_y = mask*output_y  # Apply input mask to output
+        return K.sum(K.square(non_zero_x - non_zero_y), axis=1)/K.sum(mask)  # i.e. normalise by the mask
+
+    @staticmethod
+    def get_nn_sum_squared_error_loss(input_x, output_y):
+        """
+        Basically when we have a super variable sized input I'm gonna test what the effect is when we only compute
+        the MSE on the non-negative inputs. Note this assumes that the input are all > 0
+        Args:
+            input_x:
+            output_y:
+
+        Returns:
+
+        """
+        # Take indicies of only the non-zero input or non-something
+        mask = tf.cast((input_x > 0), 'float32')
+        non_zero_x = mask*input_x
+        non_zero_y = mask*output_y  # Apply input mask to output
+        return K.sum(K.square(non_zero_x - non_zero_y), axis=1)
+
+    @staticmethod
+    def get_nn_binary_crossentropy_loss(input_x, output_y):
+        """
+        Basically when we have a super variable sized input I'm gonna test what the effect is when we only compute
+        the MSE on the non-negative inputs. Note this assumes that the input are all > 0
+        Args:
+            input_x:
+            output_y:
+
+        Returns:
+
+        """
+        # Take indicies of only the non-zero input or non-something
+        mask = tf.greater(input_x, 0) # i.e. only on the input
+        non_zero_x = tf.boolean_mask(input_x, mask)
+        non_zero_y = tf.boolean_mask(output_y, mask)  # Apply input mask to output
+        return K.sum(K.binary_crossentropy(non_zero_x, non_zero_y, from_logits=True), axis=1)
+
+    @staticmethod
     def get_mean_squared_error_loss(input_x, output_y):
+        """ https://github.com/CancerAI-CL/IntegrativeVAEs/blob/master/code/models/common.py """
+        return K.mean(K.square(input_x - output_y), axis=1)
+
+    @staticmethod
+    def get_sum_squared_error_loss(input_x, output_y):
         """ https://github.com/CancerAI-CL/IntegrativeVAEs/blob/master/code/models/common.py """
         return K.sum(K.square(input_x - output_y), axis=1)
 
     @staticmethod
     def get_mean_absolute_error_loss(input_x, output_y):
         """ MAE """
-        return K.sum(K.abs(input_x - output_y), axis=1)
+        return K.mean(K.abs(input_x - output_y), axis=1)
 
 
     @staticmethod
