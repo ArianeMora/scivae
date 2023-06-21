@@ -156,6 +156,9 @@ class Loss:
                     reconstruction_loss += weight * self.get_nn_mean_squared_error_loss(inputs_x[loss_idx],
                                                                                      outputs_y[loss_idx]) * self.sizes[
                                                loss_idx]
+                elif loss_method == 'nn_sse':
+                    reconstruction_loss += weight * self.get_nn_sum_squared_error_loss(inputs_x[loss_idx],
+                                                                                       outputs_y[loss_idx]) * self.sizes[loss_idx]
                 elif loss_method == 'cor':
                     reconstruction_loss += weight * self.get_correlation_loss(inputs_x[loss_idx],
                                                                      outputs_y[loss_idx])*self.sizes[loss_idx]
@@ -253,7 +256,6 @@ class Loss:
     def get_mean_absolute_error_loss(input_x, output_y):
         """ MAE """
         return K.mean(K.abs(input_x - output_y), axis=1)
-
 
     @staticmethod
     def get_correlation_loss(input_x, output_y):

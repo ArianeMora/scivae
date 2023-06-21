@@ -50,7 +50,7 @@ from scivae import *
 
 ```
 
-config = {'scale': False, # Whether to min max scale your data VAEs work best when data is pre-normalised & outliers removed for trainiing
+config = {'scale_data': False, # Whether to min max scale your data VAEs work best when data is pre-normalised & outliers removed for trainiing
            'batch_norm': True, 
           'loss': {'loss_type': 'mse', # mean squared error
            'distance_metric': 'mmd', # Maximum mean discrepency (can use kl but it works worse)
@@ -73,7 +73,7 @@ it be denoising etc in the future.
 ```
 vae_mse = VAE(numpy_array, numpy_array, labels, config, 'vae_label')
 # Set batch size and number of epochs
-vae_mse.encode('default', epochs=500, bacth_size=50, early_stop=True)
+vae_mse.encode('default', epochs=500, batch_size=50, early_stop=True)
 encoded_data_vae_mse = vae_mse.get_encoded_data()
 ``` 
 The VAE can also be used to encode new data.
