@@ -30,6 +30,8 @@ Tested in python 3.10 on a Mac (without M1 chip - this won't work on a Mac with 
 
 Check out the install page and the documentation or our package on pip: https://pypi.org/project/scivae
 ```
+conda create --name scivae python=3.10.6
+pip install -r requirements.txt
 pip install scivae
 ```
 

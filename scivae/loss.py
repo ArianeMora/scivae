@@ -91,6 +91,17 @@ class Loss:
                     total += s
             self.sizes = [s/total if isinstance(s, int) else (s[0] * s[1])/total for s in input_size]
 
+        # self.contrastive_loss will be defined as a method
+        # https://keras.io/examples/vision/semisupervised_simclr/
+        self.probe_loss = K.losses.SparseCategoricalCrossentropy(from_logits=True)
+        self.contrastive_loss_tracker = K.metrics.Mean(name="c_loss")
+        self.contrastive_accuracy = K.metrics.SparseCategoricalAccuracy(
+            name="c_acc"
+        )
+        self.probe_loss_tracker = K.metrics.Mean(name="p_loss")
+        self.probe_accuracy = K.metrics.SparseCategoricalAccuracy(name="p_acc")
+
+
     def get_loss(self, inputs_x, outputs_y, latent_z, latent_z_mean, latent_z_log_sigma) -> float:
         """
         Get the loss as defined by the configuration setup.
@@ -395,6 +406,37 @@ class Loss:
         # add mmd loss and true loss
         return loss_mmd
 
+    def contrastive_loss(self, projections_1, projections_2, temperature=0.1):
+        """
+        Contrastive loss defined from the keras example. Basically we want two projections and to include this loss
+        into our calculation for the 
+        """
+        # https://keras.io/examples/vision/semisupervised_simclr/
+        # InfoNCE loss (information noise-contrastive estimation)
+        # NT-Xent loss (normalized temperature-scaled cross entropy)
+
+        # Cosine similarity: the dot product of the l2-normalized feature vectors
+        projections_1 = tf.normalize(projections_1, axis=1)
+        projections_2 = tf.normalize(projections_2, axis=1)
+        similarities = (
+            tf.matmul(projections_1, tf.transpose(projections_2)) / temperature
+        )
+
+        # The similarity between the representations of two augmented views of the
+        # same image should be higher than their similarity with other views
+        batch_size = tf.shape(projections_1)[0]
+        contrastive_labels = tf.arange(batch_size)
+
+        # The temperature-scaled similarities are used as logits for cross-entropy
+        # a symmetrized version of the loss is used here
+        loss_1_2 = K.losses.sparse_categorical_crossentropy(
+            contrastive_labels, similarities, from_logits=True
+        )
+        loss_2_1 = K.losses.sparse_categorical_crossentropy(
+            contrastive_labels, tf.transpose(similarities), from_logits=True
+        )
+        return (loss_1_2 + loss_2_1) / 2
+    
     def get_bimodal_mmd_distance(self, latent_z):
         """ Compute MMD twice, once with each different mean. """
 
