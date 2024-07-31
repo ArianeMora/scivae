@@ -90,16 +90,8 @@ class Loss:
                 else:
                     total += s
             self.sizes = [s/total if isinstance(s, int) else (s[0] * s[1])/total for s in input_size]
-
-        # self.contrastive_loss will be defined as a method
-        # https://keras.io/examples/vision/semisupervised_simclr/
-        self.probe_loss = K.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.contrastive_loss_tracker = K.metrics.Mean(name="c_loss")
-        self.contrastive_accuracy = K.metrics.SparseCategoricalAccuracy(
-            name="c_acc"
-        )
-        self.probe_loss_tracker = K.metrics.Mean(name="p_loss")
-        self.probe_accuracy = K.metrics.SparseCategoricalAccuracy(name="p_acc")
+        if other_configs.get('contrastive_params'):
+            self.contrastive_params = other_configs.get('contrastive_params')
 
 
     def get_loss(self, inputs_x, outputs_y, latent_z, latent_z_mean, latent_z_log_sigma) -> float:
@@ -230,7 +222,7 @@ class Loss:
 
         """
         # Take indicies of only the non-zero input or non-something
-        mask = tf.cast((input_x > 0), 'float32')
+        mask = tf.cast((input_x != 0), 'float32')
         non_zero_x = mask*input_x
         non_zero_y = mask*output_y  # Apply input mask to output
         return K.sum(K.square(non_zero_x - non_zero_y), axis=1)
@@ -406,7 +398,7 @@ class Loss:
         # add mmd loss and true loss
         return loss_mmd
 
-    def contrastive_loss(self, projections_1, projections_2, temperature=0.1):
+    def contrastive_loss(self, projections_1, projections_2, contrastive_labels, temperature=0.1):
         """
         Contrastive loss defined from the keras example. Basically we want two projections and to include this loss
         into our calculation for the 
@@ -422,13 +414,8 @@ class Loss:
             tf.matmul(projections_1, tf.transpose(projections_2)) / temperature
         )
 
-        # The similarity between the representations of two augmented views of the
-        # same image should be higher than their similarity with other views
-        batch_size = tf.shape(projections_1)[0]
-        contrastive_labels = tf.arange(batch_size)
-
         # The temperature-scaled similarities are used as logits for cross-entropy
-        # a symmetrized version of the loss is used here
+        # Here we provide the labels based on what we created before (as in if they share protein/chem then we combine.)
         loss_1_2 = K.losses.sparse_categorical_crossentropy(
             contrastive_labels, similarities, from_logits=True
         )

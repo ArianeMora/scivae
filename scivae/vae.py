@@ -231,10 +231,10 @@ class VAE(object):
             layer_start_idx = 1  # Since we have already done the first
         else:
             self.encoding = self.inputs_x
-        # Now for subsequent layers we run this
-        for layer_idx in range(layer_start_idx, len(self.encoding_config['layers'])):
-            layer = self.encoding_config['layers'][layer_idx]
-            self.encoding = self.build_layer(layer['num_nodes'], self.encoding, layer['activation_fn'])
+            # Now for subsequent layers we run this
+            for layer_idx in range(layer_start_idx, len(self.encoding_config['layers'])):
+                layer = self.encoding_config['layers'][layer_idx]
+                self.encoding = self.build_layer(layer['num_nodes'], self.encoding, layer['activation_fn'])
 
         return self.encoding
 

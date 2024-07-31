@@ -53,13 +53,17 @@ class TestSupVAE(unittest.TestCase):
         value_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
         input_values = df[value_cols].values
         labels = []
+        na_labels = []
         for c in df['label'].values:
             if c == 'Iris-setosa':
                 labels.append(np.asarray([1, 0, 0]))
+                na_labels.append(np.asarray([0, 0, 0]))
             elif c == 'Iris-virginica':
                 labels.append(np.asarray([0, 1, 0]))
+                na_labels.append(np.asarray([0, 0, 0]))
             else:
                 labels.append(np.asarray([0, 0, 1]))
+                na_labels.append(np.asarray([0, 0, 0]))
 
         print(set(df['label'].values))
         input_values = (input_values - np.min(input_values)) / (np.max(input_values) - np.min(input_values))
