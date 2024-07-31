@@ -415,23 +415,17 @@ class VAE(object):
         encoding_map = {"z": 2, "z_mean": 0, "z_log_var": 1}
         encoding_type = encoding_map.get(encoding_type)
         if self.encoded_data is not None:
-            # if self.loss.distance_metric == 'mmd':
-            #     return self.encoded_data
             if encoding_type is not None:
                 return self.encoded_data[encoding_type]
             return self.encoded_data
         if self.encoder is not None:
             self.encoded_data = self.encoder.predict(self.input_data_np)
-            # if self.loss.distance_metric == 'mmd':
-            #     return self.encoded_data
             if encoding_type is not None:
                 return self.encoded_data[encoding_type]
             return self.encoded_data
         if self.input_data_np is not None:
             self.encode(method="default")
             self.encoded_data = self.encoder.predict(self.input_data_np)
-            # if self.loss.distance_metric == 'mmd':
-            #     return self.encoded_data
             if encoding_type is not None:
                 return self.encoded_data[encoding_type]
         self.u.warn_p(["WARN: get_encoded_data. \n \t No data or encoded data. Returning None."])
