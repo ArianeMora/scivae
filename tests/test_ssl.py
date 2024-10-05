@@ -36,7 +36,7 @@ class TestSupVAE(unittest.TestCase):
         Test using CE loss on the labels to get better separation in latent space
         """
         loss = {'loss_type': 'multi', 'distance_metric': 'mmd', 'mmd_weight': 0.2,
-                'multi_loss': ['mse', 'ce'], 'loss_weightings': [0.5, 10.0]}
+                'multi_loss': ['mse', 'ce'], 'loss_weightings': [0.5, 10.0], 'contrastive_params': 'yolo'}
         encoding = {'layers': [{'num_nodes': 2, 'activation_fn': 'selu'},
                                 {'num_nodes': 3, 'activation_fn': 'selu'}]} # , {'num_nodes': 3, 'activation_fn': 'relu'}]}
         decoding = {'layers': [[{'num_nodes': 3, 'activation_fn': 'selu'},
