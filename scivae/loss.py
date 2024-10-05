@@ -91,6 +91,7 @@ class Loss:
                 else:
                     total += s
             self.sizes = [s/total if isinstance(s, int) else (s[0] * s[1])/total for s in input_size]
+        self.contrastive_params = None
         if other_configs.get('contrastive_params'):
             self.contrastive_params = other_configs.get('contrastive_params')
 
@@ -148,7 +149,7 @@ class Loss:
                     weight = loss_weightings[j]
                 else:
                     weight = 1.0
-                if loss_method == 'ce':
+                if loss_method == 'ce' and self.contrastive_params is None:
                     # This way if we don't have a label we aren't actually checking for the reconstruction if that
                     reconstruction_loss += weight * self.get_binary_crossentropy_loss(inputs_x[loss_idx],
                                                                              outputs_y[loss_idx])
@@ -405,7 +406,7 @@ class Loss:
         # add mmd loss and true loss
         return loss_mmd
 
-    def get_contrastive_loss(self, inputs_x, outputs_y, temperature=0.1):
+    def get_contrastive_loss(self, inputs_x, outputs_y):
         """
         Contrastive loss defined from the keras example. 
         
@@ -419,31 +420,33 @@ class Loss:
         # NT-Xent loss (normalized temperature-scaled cross entropy)
         # What we're going to do is to take a shuffle from the inputs x and the outputs y to make our little batches 
         # Which some will be shared classes and some will be different.
+        temperature = self.contrastive_params.get('temperatue') if self.contrastive_params.get('temperatue') else 1.0
         indices = tf.random.shuffle(tf.range(tf.shape(inputs_x)[0]))
         # Shuffle both tensors using the same indices
         shuffled_inputs_x = tf.gather(inputs_x, indices)
         suffled_outputs_y = tf.gather(outputs_y, indices)
 
         # Cosine similarity: the dot product of the l2-normalized feature vectors
-        projections_1 = inputs_x #tf.normalize(inputs_x, axis=1)
+        projections_1 = inputs_x
         projections_2 = shuffled_inputs_x # tf.normalize(shuffled_inputs_x, axis=1)
         similarities = (
             tf.matmul(projections_1, tf.transpose(projections_2)) / temperature
         )
 
-        # The temperature-scaled similarities are used as logits for cross-entropy
-        # Here we provide the labels based on what we created before (as in if they share protein/chem then we combine.)
-        contrastive_labels = tf.reduce_sum(tf.abs(outputs_y - suffled_outputs_y), axis=1) #tf.reduce_sum(tf.abs(outputs_y - suffled_outputs_y), axis=0) # I.e. just take 1 if 1 and 0 if 0 to determine whether they are the same
+        contrastive_labels = tf.reduce_sum(tf.abs(outputs_y - suffled_outputs_y), axis=1)
+
+        contrastive_labels = tf.clip_by_value(contrastive_labels, clip_value_min=-float('inf'), clip_value_max=1)
+
+        loss_1_2 = tf.keras.losses.sparse_categorical_crossentropy(
+            contrastive_labels, similarities, from_logits=True
+        )
         
-        return tf.tensordot(similarities, contrastive_labels, axes=1)
-        # loss_1_2 = tf.keras.losses.sparse_categorical_crossentropy(
-        #     contrastive_labels, similarities, from_logits=True
-        # )
-        # loss_2_1 = tf.keras.losses.sparse_categorical_crossentropy(
-        #     contrastive_labels, tf.transpose(similarities), from_logits=True
-        # )
-        #return (loss_1_2 + loss_2_1) / 2
-    
+        loss_2_1 = tf.keras.losses.sparse_categorical_crossentropy(
+            contrastive_labels, tf.transpose(similarities), from_logits=True
+        )
+
+        return (loss_1_2 + loss_2_1) / 2
+
     def get_bimodal_mmd_distance(self, latent_z):
         """ Compute MMD twice, once with each different mean. """
 
