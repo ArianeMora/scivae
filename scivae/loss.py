@@ -21,6 +21,7 @@ from tensorflow.keras import backend as K
 import tensorflow as tf
 import tensorflow_probability as tfp
 
+from sklearn.utils import shuffle
 
 class LossException(SciException):
     def __init__(self, message=''):
@@ -90,6 +91,7 @@ class Loss:
                 else:
                     total += s
             self.sizes = [s/total if isinstance(s, int) else (s[0] * s[1])/total for s in input_size]
+        self.contrastive_params = None
         if other_configs.get('contrastive_params'):
             self.contrastive_params = other_configs.get('contrastive_params')
 
@@ -147,7 +149,7 @@ class Loss:
                     weight = loss_weightings[j]
                 else:
                     weight = 1.0
-                if loss_method == 'ce':
+                if loss_method == 'ce' and self.contrastive_params is None:
                     # This way if we don't have a label we aren't actually checking for the reconstruction if that
                     reconstruction_loss += weight * self.get_binary_crossentropy_loss(inputs_x[loss_idx],
                                                                              outputs_y[loss_idx])
@@ -173,8 +175,14 @@ class Loss:
             msg = self.u.msg.msg_arg_err("Loss __init__", "loss", self.loss_type, self.loss_types)
             self.u.err_p([msg])
             raise LossException(msg)
+        if self.contrastive_params is not None:
+            # The way contrastive loss is set up is that the decoder will have the labels probs a bad way of doing it
+            # but yolo (or pls help me fix this)
+            contrastive_loss = self.get_contrastive_loss(inputs_x[0], outputs_y[1]) 
+        else:
+            contrastive_loss = 0
         # Return the mean between the reconstruction loss and the learning rate * the distance between the distributions
-        return K.mean(reconstruction_loss + (self.mmd_weight * distance))
+        return K.mean(reconstruction_loss + (self.mmd_weight * distance) + contrastive_loss)
 
     @staticmethod
     def get_binary_crossentropy_loss(input_x, output_y):
@@ -398,32 +406,47 @@ class Loss:
         # add mmd loss and true loss
         return loss_mmd
 
-    def contrastive_loss(self, projections_1, projections_2, contrastive_labels, temperature=0.1):
+    def get_contrastive_loss(self, inputs_x, outputs_y):
         """
-        Contrastive loss defined from the keras example. Basically we want two projections and to include this loss
-        into our calculation for the 
+        Contrastive loss defined from the keras example. 
+        
+        OK since I'm too dumb to work out how they did it (lol). Going to bastardize this.  
+        Basically, we have the info in the outputs about what class a sample belongs to (we're including this as a secondary part).
+
+
         """
         # https://keras.io/examples/vision/semisupervised_simclr/
         # InfoNCE loss (information noise-contrastive estimation)
         # NT-Xent loss (normalized temperature-scaled cross entropy)
+        # What we're going to do is to take a shuffle from the inputs x and the outputs y to make our little batches 
+        # Which some will be shared classes and some will be different.
+        temperature = self.contrastive_params.get('temperatue') if self.contrastive_params.get('temperatue') else 1.0
+        indices = tf.random.shuffle(tf.range(tf.shape(inputs_x)[0]))
+        # Shuffle both tensors using the same indices
+        shuffled_inputs_x = tf.gather(inputs_x, indices)
+        suffled_outputs_y = tf.gather(outputs_y, indices)
 
         # Cosine similarity: the dot product of the l2-normalized feature vectors
-        projections_1 = tf.normalize(projections_1, axis=1)
-        projections_2 = tf.normalize(projections_2, axis=1)
+        projections_1 = inputs_x
+        projections_2 = shuffled_inputs_x # tf.normalize(shuffled_inputs_x, axis=1)
         similarities = (
             tf.matmul(projections_1, tf.transpose(projections_2)) / temperature
         )
 
-        # The temperature-scaled similarities are used as logits for cross-entropy
-        # Here we provide the labels based on what we created before (as in if they share protein/chem then we combine.)
-        loss_1_2 = K.losses.sparse_categorical_crossentropy(
+        contrastive_labels = tf.reduce_sum(tf.abs(outputs_y - suffled_outputs_y), axis=1)
+
+        contrastive_labels = tf.clip_by_value(contrastive_labels, clip_value_min=-float('inf'), clip_value_max=1)
+
+        loss_1_2 = tf.keras.losses.sparse_categorical_crossentropy(
             contrastive_labels, similarities, from_logits=True
         )
-        loss_2_1 = K.losses.sparse_categorical_crossentropy(
+        
+        loss_2_1 = tf.keras.losses.sparse_categorical_crossentropy(
             contrastive_labels, tf.transpose(similarities), from_logits=True
         )
+
         return (loss_1_2 + loss_2_1) / 2
-    
+
     def get_bimodal_mmd_distance(self, latent_z):
         """ Compute MMD twice, once with each different mean. """
 

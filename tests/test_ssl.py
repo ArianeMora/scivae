@@ -31,12 +31,64 @@ class TestSupVAE(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp_dir)
 
+
+    def test_VAE(self):
+        """
+        Test using CE loss on the labels to get better separation in latent space
+        """
+        loss = {'loss_type': 'mse', 'distance_metric': 'mmd', 'mmd_weight': 0.2, 'loss_weightings': [0.5, 10.0]}
+        encoding = {'layers': [{'num_nodes': 2, 'activation_fn': 'selu'},
+                                {'num_nodes': 3, 'activation_fn': 'selu'}]} # , {'num_nodes': 3, 'activation_fn': 'relu'}]}
+        decoding = {'layers': [{'num_nodes': 3, 'activation_fn': 'selu'},
+                                {'num_nodes': 2, 'activation_fn': 'selu'}]}
+        latent = {'num_nodes': 2}
+        optimisers = {'name': 'adam', 'params': {}}
+
+        data = f'{self.data_dir}iris.csv'
+        # Build a simple vae to learn the relations in the iris dataset
+        df = pd.read_csv(data)
+        # Shuffle
+        df = df.sample(frac=1)
+
+        value_cols = ['sepal_length', 'sepal_width', 'petal_length', 'petal_width']
+        input_values = np.array(df[value_cols].values)
+
+        config = {'loss': loss, 'encoding': encoding, 'decoding': decoding, 'latent': latent,
+                  'optimiser': optimisers}
+
+        labels = df['label'].values
+        input_values = (input_values - np.min(input_values)) / (np.max(input_values) - np.min(input_values))
+
+        vae = VAE(input_values, input_values, df['label'].values, config, 'vae')
+
+        vae.encode('default', logging_dir=self.tmp_dir)
+
+        # Lets have a look at a scatterplot version & apply the class colours to our plot
+        encoding = vae.get_encoded_data()
+        encoding = vae.encode_new_data(input_values, scale=False)
+
+        decoding = vae.decoder.predict(encoding)
+        print(decoding)
+        vis_df = pd.DataFrame()
+        vis_df['latent_0'] = encoding[:, 0]
+        vis_df['latent_1'] = encoding[:, 1]
+        labels = df['label'].values
+        lut = dict(zip(set(labels), sns.color_palette("coolwarm", len(set(labels)))))
+        row_colors2 = pd.DataFrame(labels)[0].map(lut)
+        vis_df['label'] = row_colors2
+        scatter = Scatterplot(vis_df, 'latent_0', 'latent_1', colour=row_colors2, title='multiloss', xlabel='latent')
+        scatter.plot()
+        plt.show()
+        vd = Validate(vae.get_encoded_data(), labels)
+        print(vd.predict('rf', 'accuracy'))
+        print(vd.predict('svm', 'balanced_accuracy'))
+
     def test_sup_VAE(self):
         """
         Test using CE loss on the labels to get better separation in latent space
         """
         loss = {'loss_type': 'multi', 'distance_metric': 'mmd', 'mmd_weight': 0.2,
-                'multi_loss': ['mse', 'ce'], 'loss_weightings': [0.5, 10.0]}
+                'multi_loss': ['mse', 'ce'], 'loss_weightings': [0.5, 10.0], 'contrastive_params': {}}
         encoding = {'layers': [{'num_nodes': 2, 'activation_fn': 'selu'},
                                 {'num_nodes': 3, 'activation_fn': 'selu'}]} # , {'num_nodes': 3, 'activation_fn': 'relu'}]}
         decoding = {'layers': [[{'num_nodes': 3, 'activation_fn': 'selu'},
