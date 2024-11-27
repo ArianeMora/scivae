@@ -61,6 +61,8 @@ class VAE(object):
         if vae_label is None:
             rand_label = ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
             vae_label = f'VAE_{rand_label}'
+        else:
+            vae_label = str(vae_label)
         if config_as_str:
             with open(config, "r") as fp:
                 config = json.load(fp)  # load from the FP
