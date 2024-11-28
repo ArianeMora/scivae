@@ -1,12 +1,14 @@
 # scivae
 
 1. [docs](https://arianemora.github.io/scivae/)
-2. [paper](https://doi.org/10.1101/2021.06.22.449386)
+2. [paper](https://doi.org/10.1093/nar/gkac006)
 
 ## Install 
 
-```conda create --name scivae python==3.8.20```
-```pip install scivae```
+```
+conda create --name scivae python==3.8.20
+pip install scivae
+```
 
 **Note there is an issue with python 3.10 which idk why**
 
@@ -44,36 +46,17 @@ print(encoded_data_vae_mse[0])
 plt.scatter(encoded_data_vae_mse[:,0], encoded_data_vae_mse[:,1])
 ```
 
-## Other info
-scivae is a wrapper around the keras AE that allows you to build/save/visualise with a variational autoencoder.
+## Uses 
+I've used this for my own research in the following two publications:
 
-Blogs & notebooks used as references are noted in the code and a couple at the end of this README.
+1. [SiRCle (Signature Regulatory Clustering) model integration reveals mechanisms of phenotype regulation in renal cancer](https://www.biorxiv.org/content/10.1101/2022.07.02.498058v1.abstract)
+2. [Variational autoencoding of gene landscapes during mouse CNS development uncovers layered roles of Polycomb Repressor Complex 2](https://doi.org/10.1093/nar/gkac006)
 
-The primary difference between a VAE and a normal AE is in how the loss function is computed. Here the loss 
-has been abstracted out to the loss class (in *loss.py*) where we can use a number of loss metrics MMD, KL and combine this with 
-MSE or COR loss.
+### Example 1: integration of ChIP-seq and RNA-seq data for embryonic mouse brain development
+![upload](images/scivae.png)
 
-The VAE (in *vae.py*) class has the general VAE structure.
-
-Saving has been implemented of the VAE state so that you can re-use your trained model on the same data and get 
-the same latent space (or use the trained VAE on new data).  
-
-Optimiser was a temporary deviation where we can pass in a VAE structure and using an evolutionary algorithm the 
-optimisation class will try to get the best VAE structure. This will be returned.
-
-Validate allows for running simple validations using scikitlearn i.e. if your primary interest is to get a meaningful
- latent space that captures the key features of the dataset, it can be good to compare how much "information" has 
- been captured between your classes. A good way of measuring this is by passing through the latent space and a set 
- of labels and seeing if a simple classifier can distingush your classes better than with the raw data.
-
-## Users
-Tested in python 3.10 on a Mac (without M1 chip - this won't work on a Mac with a M1 since they don't work well with tensorflow).
-
-If you have issues with install, download the `requirements.txt` file and install the exact packages:
-
-```
-pip install -r requirements.txt
-```
+### Example 2: pseudo statistics for kidney cancer integration across DNA methylation, gene expression and protein abundance
+![upload](images/sircle.png)
 
 ### Documentation 
 
@@ -128,6 +111,41 @@ and second latent nodes.
 
 ```
 plt.scatter(encoded_data_vae_mse[:,0], encoded_data_vae_mse[:,1])
+```
+
+
+## Other info
+scivae is a wrapper around the keras AE that allows you to build/save/visualise with a variational autoencoder.
+
+Blogs & notebooks used as references are noted in the code and a couple at the end of this README.
+
+The primary difference between a VAE and a normal AE is in how the loss function is computed. Here the loss 
+has been abstracted out to the loss class (in *loss.py*) where we can use a number of loss metrics MMD, KL and combine this with 
+MSE or COR loss.
+
+The VAE (in *vae.py*) class has the general VAE structure.
+
+Saving has been implemented of the VAE state so that you can re-use your trained model on the same data and get 
+the same latent space (or use the trained VAE on new data).  
+
+Optimiser was a temporary deviation where we can pass in a VAE structure and using an evolutionary algorithm the 
+optimisation class will try to get the best VAE structure. This will be returned.
+
+Validate allows for running simple validations using scikitlearn i.e. if your primary interest is to get a meaningful
+ latent space that captures the key features of the dataset, it can be good to compare how much "information" has 
+ been captured between your classes. A good way of measuring this is by passing through the latent space and a set 
+ of labels and seeing if a simple classifier can distingush your classes better than with the raw data.
+
+## Users
+
+Works on mac and ubuntu, no tests on windows.
+
+If you have issues with install, download the `requirements.txt` file and install the exact packages:
+
+Make sure you are using **python 3.8!**
+
+```
+pip install -r requirements.txt
 ```
 
 ## Tests
