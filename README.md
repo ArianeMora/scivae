@@ -1,9 +1,50 @@
 # scivae
 
-Check out our docs: https://arianemora.github.io/scivae/  
+1. [docs](https://arianemora.github.io/scivae/)
+2. [paper](https://doi.org/10.1101/2021.06.22.449386)
 
-If you use this please cite: https://doi.org/10.1101/2021.06.22.449386
+## Install 
 
+```conda create --name scivae python==3.8.20```
+```pip install scivae```
+
+**Note there is an issue with python 3.10 which idk why**
+
+## Run 
+
+Quickstart example:
+
+```
+from scivae import *
+import numpy as np
+import matplotlib.pyplot as plt
+
+numpy_array = np.random.rand(100, 30)
+labels = np.ones(100)
+
+config = {'scale_data': False, # Whether to min max scale your data VAEs work best when data is pre-normalised & outliers removed for trainiing
+           'batch_norm': True, 
+           'loss': {'loss_type': 'mse', # mean squared error
+           'distance_metric': 'mmd', # Maximum mean discrepency (can use kl but it works worse)
+           'mmd_weight': 1}, # Weight of mmd vs mse - basically having this > 1 will weigh making it normally distributed higher
+           # and making it < 1 will make reconstruction better.
+           'encoding': {'layers': [{'num_nodes': 32, 'activation_fn': 'selu'}, # First layer of encoding
+                                  {'num_nodes': 16, 'activation_fn': 'selu'}]}, # Second layer of encoding
+           'decoding': {'layers': [{'num_nodes': 16, 'activation_fn': 'selu'},  # First layer of decoding
+                                  {'num_nodes': 32, 'activation_fn': 'selu'}]}, # Second layer of decoding 
+ 'latent': {'num_nodes': 2}, 'optimiser': {'params': {}, 'name': 'adam'}} # Empty params means use default
+
+vae_mse = VAE(numpy_array, numpy_array, labels, config, 'vae_label')
+# Set batch size and number of epochs
+vae_mse.encode('default', epochs=500, batch_size=50, early_stop=True)
+encoded_data_vae_mse = vae_mse.get_encoded_data()
+
+print(encoded_data_vae_mse[0])
+
+plt.scatter(encoded_data_vae_mse[:,0], encoded_data_vae_mse[:,1])
+```
+
+## Other info
 scivae is a wrapper around the keras AE that allows you to build/save/visualise with a variational autoencoder.
 
 Blogs & notebooks used as references are noted in the code and a couple at the end of this README.
@@ -28,12 +69,6 @@ Validate allows for running simple validations using scikitlearn i.e. if your pr
 ## Users
 Tested in python 3.10 on a Mac (without M1 chip - this won't work on a Mac with a M1 since they don't work well with tensorflow).
 
-Check out the install page and the documentation or our package on pip: https://pypi.org/project/scivae
-```
-conda create --name scivae python=3.10.6
-pip install scivae
-```
-
 If you have issues with install, download the `requirements.txt` file and install the exact packages:
 
 ```
@@ -44,7 +79,6 @@ pip install -r requirements.txt
 
 It is very easy to call the basic VAE. Simply install the package (or raw code). Then you need to setup 
 a config dictionary. This is pretty self explanatory. 
-
 
 ```
 from scivae import *
@@ -96,14 +130,12 @@ and second latent nodes.
 plt.scatter(encoded_data_vae_mse[:,0], encoded_data_vae_mse[:,1])
 ```
 
-### Real documentation is coming - if you want it raise an issue for what you are interested in and give me a cheeky star 
-
 ## Tests
 See tests for further examples.
 
-
 ## References
-        https://github.com/pren1/keras-MMD-Variational-Autoencoder/blob/master/Keras_MMD_Variational_Autoencoder.ipynb
-        https://github.com/s-omranpour/X-VAE-keras/blob/master/VAE/VAE_MMD.ipynb
-        https://github.com/ShengjiaZhao/MMD-Variational-Autoencoder/blob/master/mmd_vae.py
-        https://github.com/CancerAI-CL/IntegrativeVAEs/blob/master/code/models/mmvae.py
+
+1. https://github.com/pren1/keras-MMD-Variational-Autoencoder/blob/master/Keras_MMD_Variational_Autoencoder.ipynb
+2. https://github.com/s-omranpour/X-VAE-keras/blob/master/VAE/VAE_MMD.ipynb
+3. https://github.com/ShengjiaZhao/MMD-Variational-Autoencoder/blob/master/mmd_vae.py
+4. https://github.com/CancerAI-CL/IntegrativeVAEs/blob/master/code/models/mmvae.py
