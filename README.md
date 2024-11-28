@@ -53,7 +53,10 @@ I've used this for my own research in the following two publications:
 2. [Variational autoencoding of gene landscapes during mouse CNS development uncovers layered roles of Polycomb Repressor Complex 2](https://doi.org/10.1093/nar/gkac006)
 
 ### Example 1: integration of ChIP-seq and RNA-seq data for embryonic mouse brain development
-![upload](images/scivae.png)
+
+<div align="center">
+<img src="images/scivae.png" alt="Example Image" width="50%">
+</div>
 
 ### Example 2: pseudo statistics for kidney cancer integration across DNA methylation, gene expression and protein abundance
 ![upload](images/sircle.png)
